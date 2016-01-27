@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.CameraServer;
 
 /**
@@ -26,7 +25,6 @@ public class Robot extends IterativeRobot {
 	Joystick stick;
 //	Servo servoBot;
 //	Servo servoTop;
-	Encoder intakeEncoder;
 	CameraServer camera1;
 	//CameraServer camera2;
 	Victor driveLeft;
@@ -36,7 +34,6 @@ public class Robot extends IterativeRobot {
 	DigitalInput intakeLimitSwitchUp;
 	DigitalInput intakeLimitSwitchDown;
 	int autoLoopCounter;
-	boolean intakeIsUp;    //help i don't know what i'm doing i'll put this here anyways ~Zac
 	
     /**
      * This function is run when the robot is first started up and should be
@@ -49,7 +46,6 @@ public class Robot extends IterativeRobot {
     	stick = new Joystick(0);
     	intakeLimitSwitchUp = new DigitalInput(3);
     	intakeLimitSwitchDown = new DigitalInput(4);
-    	intakeEncoder = new Encoder(1,2,true);    //Ports 1,2 used by intake.
     	intakeMotor = new VictorSP(2);
 //    	servoBot = new Servo(2);
 //    	servoTop = new Servo(3);
@@ -72,8 +68,6 @@ public class Robot extends IterativeRobot {
     	SmartDashboard.putString("test", "Test");
     	
     	autoLoopCounter = 0;
-    	
-    	intakeEncoder.reset();
     }
 
     /**
