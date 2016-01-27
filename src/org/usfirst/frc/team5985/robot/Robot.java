@@ -47,8 +47,6 @@ public class Robot extends IterativeRobot {
     	intakeLimitSwitchUp = new DigitalInput(3);
     	intakeLimitSwitchDown = new DigitalInput(4);
     	intakeMotor = new VictorSP(2);
-//    	servoBot = new Servo(2);
-//    	servoTop = new Servo(3);
 //    	lineSensor = new DigitalInput(0);
     	camera1 = CameraServer.getInstance();
     	camera1.setQuality(50);
@@ -110,7 +108,7 @@ public class Robot extends IterativeRobot {
     	
     	//intake();
     	
-    	//arm();
+    	//arm();    TODO build and test the arm
     	
     	//System.out.println("teleopPeriodic: Stick x = " + stick.getX() + " y = " + stick.getY());
     }
@@ -126,21 +124,24 @@ public class Robot extends IterativeRobot {
     {
     	// Driving code for the robot
     	
+    	//Sets the speedModifier to the throttle
     	double speedModifier = (stick.getThrottle() - 1 ) / 2;
-    	
     	
     	System.out.println("speedModifier:'" + speedModifier +"'");
     	
+    	//Gets stick values and sets variables for it
     	double steering = stick.getX() * speedModifier;
     	double power = stick.getY() * speedModifier;
     	
+    	//Applies above variables to variables that will be applied to the motors
     	double leftPower = -power + -steering;
     	double rightPower = power + -steering;
     	
+    	//Displays the above variables (the motor powers)
     	System.out.println("leftPower:'" + leftPower +"'");
     	System.out.println("rightPower:'" + rightPower +"'");
     			
-    	// TODO: test this on the actual robot, the signs are probably wrong 
+    	//Sends the power variables to the motors
     	driveLeft.set(leftPower);
     	driveRight.set(rightPower);
     }
