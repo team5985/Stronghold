@@ -108,7 +108,7 @@ public class Robot extends IterativeRobot {
         
     	drive();
     	
-    	intake();
+    	//intake();
     	
     	//arm();
     	
@@ -121,8 +121,7 @@ public class Robot extends IterativeRobot {
     public void testPeriodic() {
     	LiveWindow.run();
     }
-    
-    
+        
     private void drive()
     {
     	// Driving code for the robot
@@ -199,12 +198,12 @@ public class Robot extends IterativeRobot {
     	
     	//armMotor.set(0.0);
     	
-    	if (stick.getRawButton(7))
+    	if (stick.getPOV() == 0)
     	{
     		//Move up until limit switch hit
     		if (!intakeLimitSwitchUp.get()) intakeMotor.set(1.0);
     	}
-    	else if (stick.getRawButton(8))
+    	else if (stick.getPOV() == 2)
     	{
     		//Move down until limit switch hit
     		if (!intakeLimitSwitchDown.get()) intakeMotor.set(-1.0);
