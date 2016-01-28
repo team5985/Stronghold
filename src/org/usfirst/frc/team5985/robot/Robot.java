@@ -22,17 +22,24 @@ import edu.wpi.first.wpilibj.CameraServer;
  */
 public class Robot extends IterativeRobot {
 	RobotDrive myRobot;
+	
 	Joystick stick;
-//	Servo servoBot;
-//	Servo servoTop;
+	Joystick xbox;
+	
 	CameraServer camera1;
 	//CameraServer camera2;
+	
 	Victor driveLeft;
 	Victor driveRight;
 	VictorSP intakeMotor;
+	VictorSP armMotor;
+	
 	DigitalInput lineSensor;
 	DigitalInput intakeLimitSwitchUp;
 	DigitalInput intakeLimitSwitchDown;
+	DigitalInput armLimitSwitchUp;
+	DigitalInput armLimitSwitchDown;
+	
 	int autoLoopCounter;
 	
     /**
@@ -43,18 +50,26 @@ public class Robot extends IterativeRobot {
 //    	myRobot = new RobotDrive(0,1);
     	driveLeft = new Victor(0);
     	driveRight = new Victor(1);
+    	
     	stick = new Joystick(0);
+    	xbox = new Joystick(1);
+    	
     	intakeLimitSwitchUp = new DigitalInput(3);
     	intakeLimitSwitchDown = new DigitalInput(4);
     	intakeMotor = new VictorSP(2);
+    	
+    	armLimitSwitchUp = new DigitalInput(1);
+    	armLimitSwitchDown = new DigitalInput(2);
+    	armMotor = new VictorSP(9);
+    	
 //    	lineSensor = new DigitalInput(0);
+    	
     	camera1 = CameraServer.getInstance();
     	camera1.setQuality(50);
     	camera1.startAutomaticCapture("cam0");
     	/*camera2 = CameraServer.getInstance();
     	camera2.setQuality(50);
     	camera2.startAutomaticCapture("cam1");*/
-    	
     }
     
     /**
@@ -108,7 +123,7 @@ public class Robot extends IterativeRobot {
     	
     	//intake();
     	
-    	//arm();    TODO build and test the arm
+    	arm();
     	
     	//System.out.println("teleopPeriodic: Stick x = " + stick.getX() + " y = " + stick.getY());
     }
@@ -197,18 +212,15 @@ public class Robot extends IterativeRobot {
     {
     	//Operates arm
     	
-    	//armMotor.set(0.0);
-    	
-    	if (stick.getPOV() == 0)
+    	if (xbox.getPOV() == 0)
     	{
     		//Move up until limit switch hit
-    		if (!intakeLimitSwitchUp.get()) intakeMotor.set(1.0);
+    		if (!armLimitSwitchUp.get()) armMotor.set(1.0);
     	}
-    	else if (stick.getPOV() == 2)
+    	else if (xbox.getPOV() == 2)
     	{
     		//Move down until limit switch hit
-    		if (!intakeLimitSwitchDown.get()) intakeMotor.set(-1.0);
+    		if (!armLimitSwitchDown.get()) armMotor.set(-1.0);
     	}
     }
 }
- 
