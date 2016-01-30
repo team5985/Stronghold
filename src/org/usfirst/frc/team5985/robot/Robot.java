@@ -1,5 +1,7 @@
 package org.usfirst.frc.team5985.robot;
 
+// This touchpad is awful
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
