@@ -1,7 +1,6 @@
 package org.usfirst.frc.team5985.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-//import edu.wpi.first.wpilibj.
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 //import edu.wpi.first.wpilibj.Servo;
@@ -12,6 +11,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.CameraServer;
+//import edu.wpi.first.wpilibj.AnalogGyro;
+//import edu.wpi.first.wpilibj.SPI;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -39,6 +40,8 @@ public class Robot extends IterativeRobot {
 	DigitalInput intakeLimitSwitchDown;
 	DigitalInput armLimitSwitchUp;
 	DigitalInput armLimitSwitchDown;
+	
+	//SPI gyro;
 	
 	int autoLoopCounter;
 	
@@ -70,6 +73,8 @@ public class Robot extends IterativeRobot {
     	/*camera2 = CameraServer.getInstance();
     	camera2.setQuality(50);
     	camera2.startAutomaticCapture("cam1");*/
+    	
+    	//gyro = new SPI(0);
     }
     
     /**
@@ -119,7 +124,7 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
         
-    	drive();
+    	//drive();
     	
     	//intake();
     	
@@ -133,8 +138,8 @@ public class Robot extends IterativeRobot {
      */
     public void testPeriodic() {
     	LiveWindow.run();
-    }
-        
+    } 
+    
     private void drive()
     {
     	// Driving code for the robot
@@ -207,20 +212,35 @@ public class Robot extends IterativeRobot {
     		} //Check
     	}
     }
-    
+
     private void arm()
     {
     	//Operates arm
     	
-    	if (xbox.getPOV() == 0)
+    	//left xbox joystick up/down axis = xboxArm
+    	
+    	double xboxArm = xbox.getRawAxis(1);
+    	
+    	//If up limit reached and trying to move up, stop moving
+    	//If down limit reached and trying to move down, stop moving
+    	
+    	if (armLimitSwitchUp.get() && xboxArm < 0) 
     	{
-    		//Move up until limit switch hit
-    		if (!armLimitSwitchUp.get()) armMotor.set(1.0);
+    		xboxArm = 0;
+    		System.out.println("Up Limit Reached");
     	}
-    	else if (xbox.getPOV() == 2)
+    	else if (armLimitSwitchDown.get() && xboxArm > 0)
+    	{	
+			xboxArm = 0;
+			System.out.println("Down Limit Reached");
+    	}
+    	else if(xboxArm < 0.1 && xboxArm > -0.1)
     	{
-    		//Move down until limit switch hit
-    		if (!armLimitSwitchDown.get()) armMotor.set(-1.0);
+    	xboxArm = 0;
     	}
+    	//move arm
+    	
+    	System.out.println(xboxArm);
+    	armMotor.set(xboxArm);
     }
 }
