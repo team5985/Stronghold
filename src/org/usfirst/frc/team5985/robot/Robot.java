@@ -1,7 +1,5 @@
 package org.usfirst.frc.team5985.robot;
 
-// This touchpad is awful
-
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
@@ -10,7 +8,7 @@ import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//import edu.wpi.first.wpilibj.CounterBase.EncodingType;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.CameraServer;
 //import edu.wpi.first.wpilibj.AnalogGyro;
@@ -24,6 +22,8 @@ import edu.wpi.first.wpilibj.CameraServer;
  * directory.
  */
 public class Robot extends IterativeRobot {
+	Arm arm;
+	
 	RobotDrive myRobot;
 	
 	Joystick stick;
@@ -35,15 +35,14 @@ public class Robot extends IterativeRobot {
 	Victor driveLeft;
 	Victor driveRight;
 	VictorSP intakeMotor;
-	VictorSP armMotor;
 	
 	DigitalInput lineSensor;
 	DigitalInput intakeLimitSwitchUp;
 	DigitalInput intakeLimitSwitchDown;
-	DigitalInput armLimitSwitchUp;
-	DigitalInput armLimitSwitchDown;
 	
 	//SPI gyro;
+	Encoder intakeEncoder;
+
 	
 	int autoLoopCounter;
 	
@@ -52,6 +51,10 @@ public class Robot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit() {
+    	arm = new Arm();
+    	intakeEncoder = new Encoder(2, 3);
+    	intakeEncoder.setDistancePerPulse(10); //Can be any unit
+    	
 //    	myRobot = new RobotDrive(0,1);
     	driveLeft = new Victor(0);
     	driveRight = new Victor(1);
@@ -63,9 +66,6 @@ public class Robot extends IterativeRobot {
     	intakeLimitSwitchDown = new DigitalInput(4);
     	intakeMotor = new VictorSP(2);
     	
-    	armLimitSwitchUp = new DigitalInput(1);
-    	armLimitSwitchDown = new DigitalInput(2);
-    	armMotor = new VictorSP(9);
     	
 //    	lineSensor = new DigitalInput(0);
     	
@@ -88,6 +88,10 @@ public class Robot extends IterativeRobot {
     	SmartDashboard.putString("test", "Test");
     	
     	autoLoopCounter = 0;
+    	
+    	intakeEncoder.reset();
+    	
+    	arm.init();
     }
 
     /**
@@ -119,6 +123,8 @@ public class Robot extends IterativeRobot {
      */
     public void teleopInit(){
     	System.out.println("teleopInit: Called");
+    	
+    	arm.init();
     }
 
     /**
@@ -126,12 +132,17 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() {
         
-    	//drive();
+    	drive();
     	
-    	//intake();
+    	intake();
     	
-    	arm();
+    	arm.periodic();
     	
+    	if (xbox.getRawAxis(0) < 0) arm.set(false);
+    	if (xbox.getRawAxis(0) > 0) arm.set(true);
+    	
+    	System.out.println("Arm encoder distance: " + armEncoder.getDistance());
+    	System.out.println("Intake encoder distance: " + armEncoder.getDistance());
     	//System.out.println("teleopPeriodic: Stick x = " + stick.getX() + " y = " + stick.getY());
     }
     
@@ -213,36 +224,5 @@ public class Robot extends IterativeRobot {
         		intakeMotor.set(0.0); 
     		} //Check
     	}
-    }
-
-    private void arm()
-    {
-    	//Operates arm
-    	
-    	//left xbox joystick up/down axis = xboxArm
-    	
-    	double xboxArm = xbox.getRawAxis(1);
-    	
-    	//If up limit reached and trying to move up, stop moving
-    	//If down limit reached and trying to move down, stop moving
-    	
-    	if (armLimitSwitchUp.get() && xboxArm < 0) 
-    	{
-    		xboxArm = 0;
-    		System.out.println("Up Limit Reached");
-    	}
-    	else if (armLimitSwitchDown.get() && xboxArm > 0)
-    	{	
-			xboxArm = 0;
-			System.out.println("Down Limit Reached");
-    	}
-    	else if(xboxArm < 0.1 && xboxArm > -0.1)
-    	{
-    	xboxArm = 0;
-    	}
-    	//move arm
-    	
-    	System.out.println(xboxArm);
-    	armMotor.set(xboxArm);
     }
 }
