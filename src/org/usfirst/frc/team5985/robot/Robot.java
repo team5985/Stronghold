@@ -25,6 +25,16 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
  * directory.
  */
 public class Robot extends IterativeRobot {
+	// Constants for Robot Ports
+	// PWM
+	int PWM_LEFT_MOTOR_CONTROLLER_PORT = 0;
+	int PWM_RIGHT_MOTOR_CONTROLLER_PORT = 9;
+	int PWM_INTAKE_MOTOR_CONTROLLER_PORT = 1;
+	int PWM_ARM_MOTOR_CONTROLLER_PORT = 8;
+	
+	// DIO Ports used on the Rio
+	int DIO_INTAKE_SWITCH_PORT  = 1;
+	
 	Arm _arm;
 	Intake _intake;
 	
@@ -45,6 +55,7 @@ public class Robot extends IterativeRobot {
 	Encoder armEncoder;
 	
 	ADXRS450_Gyro _gyro;
+	private static final double GYRO_GAIN = 0.008;
 
 	DigitalInput lineSensor;
 	DigitalInput intakeSwitch;
@@ -55,6 +66,7 @@ public class Robot extends IterativeRobot {
 	//SPI gyro;
 
 	int autoLoopCounter;
+	long periodicStartMs;
 	
     /**
      * This function is run when the robot is first started up and should be
@@ -64,21 +76,23 @@ public class Robot extends IterativeRobot {
     	
     	
 //    	myRobot = new RobotDrive(0,1);
-    	driveLeft = new Victor(0);
-    	driveRight = new Victor(1);
-    	_intakeMotor = new VictorSP(2);
-    	_armMotor = new VictorSP(3);
+    	driveLeft = new Victor(PWM_LEFT_MOTOR_CONTROLLER_PORT);
+    	driveRight = new Victor(PWM_RIGHT_MOTOR_CONTROLLER_PORT);
+    	
+    	_armMotor = new VictorSP(PWM_ARM_MOTOR_CONTROLLER_PORT);
     	
     	//gestureSensor = new I2C(I2C.Port.kOnboard, 0x39);
     	//gestureOutput = new byte[200];
-    	intakeSwitch = new DigitalInput(1);
+    	
     	//intakeEncoder = new Encoder(2,3,false,Encoder.EncodingType.k4X);
     	//armEncoder = new Encoder(4,5,false,Encoder.EncodingType.k4X);
     	
     	stick = new Joystick(0);
         xbox =	 new Joystick(1);
-    	_intake = new Intake(stick, _intakeMotor, intakeSwitch);
-    	_arm = new Arm(_armMotor,xbox);
+        
+    	_intake = new Intake(PWM_INTAKE_MOTOR_CONTROLLER_PORT, DIO_INTAKE_SWITCH_PORT);
+    	
+    	//_arm = new Arm(_armMotor,xbox);
     	_gyro = new ADXRS450_Gyro();
     	_gyro.reset();
     	_gyro.calibrate();
@@ -93,6 +107,8 @@ public class Robot extends IterativeRobot {
     	camera2.startAutomaticCapture("cam1");*/
     	
     	//gyro = new SPI(0);
+    	
+    	System.out.println("Gyro:" + _gyro.getAngle());
     }
     
     /**
@@ -105,6 +121,13 @@ public class Robot extends IterativeRobot {
     	
     	autoLoopCounter = 0;
     	
+    	//start time for auto period 
+    	periodicStartMs = System.currentTimeMillis();
+    	
+    	_gyro.reset();
+    	
+    	
+    	
     	//intakeEncoder.reset();
     	
     	//arm.init();
@@ -114,24 +137,25 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during autonomous
      */
     public void autonomousPeriodic() {
-/*    	if (lineSensor.get() && autoLoopCounter < 250)
-    	{
-    		myRobot.drive(-0.5, 0.0); 	// drive forwards half speed
-			autoLoopCounter++;
-    	}
     	
-    	else 
+    	long currentPeriodtimeSincePeriodStartMs = System.currentTimeMillis() - periodicStartMs;
+    	// First second of the auto period
+    	if (currentPeriodtimeSincePeriodStartMs < 1000)
     	{
-			myRobot.drive(0.0, 0.0); 	// stop robot
+    		//wait till reset gyro is complete
+    	
+    	}
+    	// drive forward for 5 seconds (from 1- 6 seconds
+    	if (currentPeriodtimeSincePeriodStartMs < 6000 && currentPeriodtimeSincePeriodStartMs > 1000)
+    	{
+    		gyroFollow(0.5); 	// drive forwards half speed
+    	}
+    	else // stop
+    	{
+    		System.out.println("Stop Gyro Drive (5 Seconds)");
+			driveLeft.set(0); 	// stop robot
+			driveRight.set(0);
 		}
-		if (lineSensor.get())
-		{
-			System.out.println("True");
-		}
-		else
-		{
-			System.out.println("False");
-		}*/
     }
     
     /**
@@ -148,7 +172,7 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() 
     {
     	drive();
-    	_intake.periodic();
+    	_intake.periodic(stick);
     	_arm.periodic();
     	if (stick.getRawButton(7))
     	{
@@ -206,5 +230,26 @@ public class Robot extends IterativeRobot {
     	//Sends the power variables to the motors
     	driveLeft.set(leftPower);
     	driveRight.set(rightPower);
+    }
+    
+    private void gyroFollow(double basePower)
+    {
+    	double gyroPower = 0;
+    	
+    	
+    	//System.out.println("Gyro:" + _gyro.getAngle());
+    	
+    	//Calculates how much to turn based on the current heading and the target heading
+    	gyroPower = _gyro.getAngle() - 0;
+    	gyroPower = gyroPower * GYRO_GAIN;
+    	
+    	double gyroMotorPowerLeft = basePower - gyroPower;
+    	double gyroMotorPowerRight = basePower + gyroPower;
+    	
+    	//Makes the motors move
+    	driveLeft.set(gyroMotorPowerLeft);
+    	driveRight.set(gyroMotorPowerRight);
+    	
+    	System.out.println("[Gyro:" + _gyro.getAngle() + "]    Motor [Left:" + gyroMotorPowerLeft + "][Right:" + gyroMotorPowerRight + "]");
     }
 }

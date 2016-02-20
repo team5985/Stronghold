@@ -11,18 +11,19 @@ import edu.wpi.first.wpilibj.VictorSP;
 
 public class Intake {
 	
-	private Joystick _stick;
+	
 	private VictorSP _motor;
 	private DigitalInput _intakeLimitSwitch;
-	int state = 0;
+
 	
 	/*
 	 * Constructor: pass in joystick, intake motor, and intake limit switch
 	 */
-	public Intake(Joystick stickIn, VictorSP motorIn, DigitalInput switchIn){
-		_stick = stickIn; 
-		_motor = motorIn;
-		_intakeLimitSwitch = switchIn;
+	public Intake(int motorIn_PWM_Port, int switchIn_DIO_Port){
+		
+		_motor = new VictorSP( motorIn_PWM_Port );
+		
+		_intakeLimitSwitch = new DigitalInput( switchIn_DIO_Port );
     	
 	}
 	
@@ -33,7 +34,7 @@ public class Intake {
      * Button 1 sucks in the ball, unless it has the ball already.
      * button 2 shoots the ball.
      */
-	public void periodic()
+	public void periodic(Joystick _stick)
 	{
 		// Ball not completely in Intake	
 		if (_intakeLimitSwitch.get())
@@ -75,12 +76,5 @@ public class Intake {
 			
 	}
 	
-	public int get() {
-		return state;
-	}
-	
-	public void set(int state) {
-		this.state = state;
-	}
 	
 }
