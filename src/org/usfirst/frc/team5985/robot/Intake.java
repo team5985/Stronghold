@@ -42,7 +42,8 @@ public class Intake {
 			//Suck in ball
 			if (_stick.getRawButton(1))
 			{
-				_motor.set(-0.4);
+				//1855 on the 21.01.16 changed the power of intake in from 0.4 to 0.3
+				_motor.set(-0.25);
 			}
 			//Shoot out ball
 			else if (_stick.getRawButton(2))
