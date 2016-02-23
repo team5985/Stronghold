@@ -35,47 +35,22 @@ public class Intake {
      * button 2 shoots the ball.
      */
 	public void periodic(Joystick _stick)
-	{
-		// Ball not completely in Intake	
-		if (_intakeLimitSwitch.get())
+	{ 	
+		if (_stick.getRawButton(1) && !_intakeLimitSwitch.get())
 		{
-			//Suck in ball
-			if (_stick.getRawButton(1))
-			{
-				//1855 on the 21.01.16 changed the power of intake in from 0.4 to 0.3
-				_motor.set(-0.25);
-			}
-			//Shoot out ball
-			else if (_stick.getRawButton(2))
-			{
-				_motor.set(1);
-			}
-			//Nothing
-			else
-			{
-				//_motor.set(0);
-				_motor.stopMotor();
-			}
-				
+			//button 1 and boulder not completely in: suck in boulder	
+			_motor.set(-0.25);
 		}
-		//Ball completely in intake
-		else if (!_intakeLimitSwitch.get())
+		else if (_stick.getRawButton(2))
 		{
-			//Shoot out ball
-			if (_stick.getRawButton(2))
-			{
-				_motor.set(1);
-			}
-			//Nothing
-			else
-			{
-				//_motor.set(0);
-				_motor.stopMotor();
-				
-			}
+			//button 2: shoot out boulder
+			_motor.set(1);
 		}
-			
+		else
+		{
+			//no buttons or button 1 and boulder completely in: stop moving
+			_motor.stopMotor();
+		}
+		System.out.println("Limit Switch: '" + _intakeLimitSwitch.get() + "'");
 	}
-	
-	
 }

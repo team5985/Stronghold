@@ -78,8 +78,8 @@ public class Robot extends IterativeRobot {
 //    	myRobot = new RobotDrive(0,1);
     	driveLeft = new Victor(PWM_LEFT_MOTOR_CONTROLLER_PORT);
     	driveRight = new Victor(PWM_RIGHT_MOTOR_CONTROLLER_PORT);
-    	
-    	//_armMotor = new VictorSP(PWM_ARM_MOTOR_CONTROLLER_PORT);
+   
+    	_armMotor = new VictorSP(PWM_ARM_MOTOR_CONTROLLER_PORT);
     	
     	//gestureSensor = new I2C(I2C.Port.kOnboard, 0x39);
     	//gestureOutput = new byte[200];
@@ -92,7 +92,7 @@ public class Robot extends IterativeRobot {
         
     	_intake = new Intake(PWM_INTAKE_MOTOR_CONTROLLER_PORT, DIO_INTAKE_SWITCH_PORT);
     	
-    	//_arm = new Arm(_armMotor,xbox);
+    	_arm = new Arm(_armMotor,xbox);
     	_gyro = new ADXRS450_Gyro();
     	_gyro.reset();
     	_gyro.calibrate();
@@ -131,7 +131,7 @@ public class Robot extends IterativeRobot {
     	
     	//intakeEncoder.reset();
     	
-    	//arm.init();
+    	_arm.init();
     }
 
     /**
@@ -143,16 +143,17 @@ public class Robot extends IterativeRobot {
     	// First second of the auto period
     	if (currentPeriodtimeSincePeriodStartMs < 1000)
     	{
-    		//wait till reset gyro is complete
-    	
+    		//set target direction to Forwards, move arm and wait till reset gyro is complete  
+        	gyroTarget = 0;
+    		_armMotor.set(-0.6);
     	}
     	
-    	//sets target direction to Forwards
-    	gyroTarget = 0;
     	
-    	// drive forward for 5 seconds (from 1- 6 seconds
-    	if (currentPeriodtimeSincePeriodStartMs < 6000 && currentPeriodtimeSincePeriodStartMs > 1000)
+    	
+    	// drive forward for 5 seconds (from 1- 6 seconds)
+    	if (currentPeriodtimeSincePeriodStartMs < 2000 && currentPeriodtimeSincePeriodStartMs > 1000)//6000 && currentPeriodtimeSincePeriodStartMs > 1000)
     	{
+    		_armMotor.set(0);
     		gyroFollow(0.5); 	// drive forwards half speed
     	}
     	else // stop
@@ -168,7 +169,7 @@ public class Robot extends IterativeRobot {
      */
     public void teleopInit(){
     	System.out.println("teleopInit: Called");
-    	//arm.init();
+    	_arm.init();
     }
 
     /**
@@ -178,7 +179,7 @@ public class Robot extends IterativeRobot {
     {
     	drive();
     	_intake.periodic(stick);
-    	//_arm.periodic();
+    	_arm.periodic();
     	if (stick.getRawButton(7))
     	{
     		System.out.println("Gyro RESET");
@@ -194,12 +195,11 @@ public class Robot extends IterativeRobot {
     	System.out.println("Z coords" + output);
     	*/
     	
-    	//if (xbox.getRawAxis(0) < 0) arm.set(false);
-    	//if (xbox.getRawAxis(0) > 0) arm.set(true);
+    	
     	
     	//System.out.println("Arm encoder distance: " + armEncoder.getDistance());
     	//System.out.println("Intake encoder distance: " + armEncoder.getDistance());
-    	//System.out.println("teleopPeriodic: Stick x = " + stick.getX() + " y = " + stick.getY());
+    	System.out.println("teleopPeriodic: Stick x = " + stick.getX() + " y = " + stick.getY());
     }
     
     /**
@@ -216,8 +216,6 @@ public class Robot extends IterativeRobot {
     	//Sets the speedModifier to the throttle
     	double speedModifier = (stick.getThrottle() - 1 ) / 2;
     	
-    	//System.out.println("speedModifier:'" + speedModifier +"'");
-    	
     	/*double POV = stick.getPOV(0);
     	
     	if (POV == -1) 
@@ -225,17 +223,32 @@ public class Robot extends IterativeRobot {
     		//Drives normally
     	*/
     		//Gets stick values and sets variables for it
-        	double steering = stick.getX() * speedModifier;
-        	double power = stick.getY() * speedModifier;
+        	double steering = stick.getX();
+        	double power = stick.getY();
+        	
+        	//corrects for the stick not being 100% zeroed
+        	if (steering < 0.1 && steering > -0.1)
+        	{
+        		steering = 0;
+        	}
+        	if (power < 0.1 && power > -0.1)
+        	{
+        		power = 0;
+        	}
+        	
+        	//multiplies by speedModifier
+        	steering = steering * speedModifier;
+        	power = power * speedModifier;
+        	
         	
         	//Applies above variables to variables that will be applied to the motors
         	double leftPower = power + -steering;
         	double rightPower = -power + -steering;
         	
         	
-        	//Displays the above variables (the motor powers)
-        	//System.out.println("leftPower:'" + leftPower +"'");
-        	//System.out.println("rightPower:'" + rightPower +"'");	
+        	//Displays the left and right motor powers and speed modifier
+        	System.out.println("speedModifier:'" + speedModifier +"'");
+        	System.out.println("leftPower:'" + leftPower +"' rightPower:'"+ rightPower +"'");
         	
         	//Sends the power variables to the motors
         	driveLeft.set(leftPower);
@@ -296,7 +309,7 @@ public class Robot extends IterativeRobot {
     	gyroPower = gyroPower * GYRO_GAIN;
     	
     	double gyroMotorPowerLeft = basePower - gyroPower;
-    	double gyroMotorPowerRight = basePower + gyroPower;
+    	double gyroMotorPowerRight = -basePower - gyroPower;
     	
     	//Makes the motors move
     	driveLeft.set(gyroMotorPowerLeft);
