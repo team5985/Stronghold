@@ -53,4 +53,13 @@ public class Intake {
 		}
 		System.out.println("Limit Switch: '" + _intakeLimitSwitch.get() + "'");
 	}
+	
+	/**
+	 * REturns state of intake
+	 * @return true if intake has boulder
+	 */
+	public boolean hasBoulder()
+	{
+		return _intakeLimitSwitch.get();
+	}
 }

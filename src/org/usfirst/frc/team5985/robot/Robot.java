@@ -2,6 +2,7 @@ package org.usfirst.frc.team5985.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Joystick.RumbleType;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SPI;
 //import edu.wpi.first.wpilibj.Servo;
@@ -185,6 +186,14 @@ public class Robot extends IterativeRobot {
     		System.out.println("Gyro RESET");
     		_gyro.reset();
     	}
+    	if (_intake.hasBoulder())
+    	{
+    		xbox.setRumble(RumbleType.kLeftRumble, 1);
+    	}
+    	else 
+    	{
+    		xbox.setRumble(RumbleType.kLeftRumble, 0);
+    	}
     	System.out.println("Gyro:" + _gyro.getAngle());
     	System.out.println("Rate:" + _gyro.getRate());
     	/*gestureSensor.read(0x08, 1, gestureOutput); //X coord
@@ -208,6 +217,12 @@ public class Robot extends IterativeRobot {
     public void testPeriodic() {
     	LiveWindow.run();
     } 
+    
+    public void disabledInit() 
+    {
+    	xbox.setRumble(RumbleType.kLeftRumble, 0);
+    }
+    
     
     private void drive()
     {
