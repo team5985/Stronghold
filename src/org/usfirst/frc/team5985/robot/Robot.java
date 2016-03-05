@@ -55,7 +55,7 @@ public class Robot extends IterativeRobot {
 	Encoder intakeEncoder;
 	Encoder armEncoder;
 	
-	ADXRS450_Gyro _gyro;
+	//ADXRS450_Gyro _gyro;
 	private static final double GYRO_GAIN = 0.008;
 	double gyroTarget;
 	DigitalInput lineSensor;
@@ -94,9 +94,9 @@ public class Robot extends IterativeRobot {
     	_intake = new Intake(PWM_INTAKE_MOTOR_CONTROLLER_PORT, DIO_INTAKE_SWITCH_PORT);
     	
     	_arm = new Arm(_armMotor,xbox);
-    	_gyro = new ADXRS450_Gyro();
-    	_gyro.reset();
-    	_gyro.calibrate();
+    	//_gyro = new ADXRS450_Gyro();
+    	//_gyro.reset();
+    	//_gyro.calibrate();
     	gyroTarget = 0;
     	
 //    	lineSensor = new DigitalInput(0);
@@ -110,7 +110,7 @@ public class Robot extends IterativeRobot {
     	
     	//gyro = new SPI(0);
     	
-    	System.out.println("Gyro:" + _gyro.getAngle());
+    	//System.out.println("Gyro:" + _gyro.getAngle());
     }
     
     /**
@@ -126,7 +126,7 @@ public class Robot extends IterativeRobot {
     	//start time for auto period 
     	periodicStartMs = System.currentTimeMillis();
     	
-    	_gyro.reset();
+    	//_gyro.reset();
     	
     	
     	
@@ -184,7 +184,7 @@ public class Robot extends IterativeRobot {
     	if (stick.getRawButton(7))
     	{
     		System.out.println("Gyro RESET");
-    		_gyro.reset();
+    		//_gyro.reset();
     	}
     	if (_intake.hasBoulder())
     	{
@@ -194,8 +194,8 @@ public class Robot extends IterativeRobot {
     	{
     		xbox.setRumble(RumbleType.kLeftRumble, 0);
     	}
-    	System.out.println("Gyro:" + _gyro.getAngle());
-    	System.out.println("Rate:" + _gyro.getRate());
+    	//System.out.println("Gyro:" + _gyro.getAngle());
+    	//System.out.println("Rate:" + _gyro.getRate());
     	/*gestureSensor.read(0x08, 1, gestureOutput); //X coord
 		String output = new String(gestureOutput);
     	System.out.println("X coords" + output);
@@ -320,8 +320,8 @@ public class Robot extends IterativeRobot {
     	//System.out.println("Gyro:" + _gyro.getAngle());
     	
     	//Calculates how much to turn based on the current heading and the target heading
-    	gyroPower = _gyro.getAngle() - gyroTarget;
-    	gyroPower = gyroPower * GYRO_GAIN;
+    	//gyroPower = _gyro.getAngle() - gyroTarget;
+    	//gyroPower = gyroPower * GYRO_GAIN;
     	
     	double gyroMotorPowerLeft = basePower - gyroPower;
     	double gyroMotorPowerRight = -basePower - gyroPower;
@@ -330,6 +330,6 @@ public class Robot extends IterativeRobot {
     	driveLeft.set(gyroMotorPowerLeft);
     	driveRight.set(gyroMotorPowerRight);
     	
-    	System.out.println("[Gyro:" + _gyro.getAngle() + "]    Motor [Left:" + gyroMotorPowerLeft + "][Right:" + gyroMotorPowerRight + "]");
+    	//System.out.println("[Gyro:" + _gyro.getAngle() + "]    Motor [Left:" + gyroMotorPowerLeft + "][Right:" + gyroMotorPowerRight + "]");
     }
 }
