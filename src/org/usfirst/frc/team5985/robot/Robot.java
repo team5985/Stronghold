@@ -58,7 +58,7 @@ public class Robot extends IterativeRobot {
 	VictorSP _intakeMotor;
 	VictorSP _armMotor;
 	
-	Encoder armEncoder;
+	//Encoder armEncoder;
 	
 	ADXRS450_Gyro _gyro;
 	private static final double GYRO_GAIN = 0.008;
@@ -68,6 +68,8 @@ public class Robot extends IterativeRobot {
 	int autoLoopCounter;
 	long periodicStartMs;
 	
+	// testing encoded
+	//PBEncoder _testEncoder;
 
     /**
      * This function is run when the robot is first started up and should be
@@ -79,6 +81,7 @@ public class Robot extends IterativeRobot {
     	driveRight = new Victor(PWM_RIGHT_MOTOR_CONTROLLER_PORT);
    
     	_armMotor = new VictorSP(PWM_ARM_MOTOR_CONTROLLER_PORT);
+    	//_testEncoder = new PBEncoder(PWM_ARM_MOTOR_CONTROLLER_PORT, 8, 9);
     	
     	//armEncoder = new Encoder(4,5,false,Encoder.EncodingType.k4X);
     	
@@ -129,7 +132,7 @@ public class Robot extends IterativeRobot {
     	if (currentPeriodtimeSincePeriodStartMs < 1000)
     	{
     		//Move arm and wait until reset gyro is complete  
-    		//_armMotor.set(-0.6);
+    		_armMotor.set(-0.6);
     	}
     	
     	
@@ -137,7 +140,7 @@ public class Robot extends IterativeRobot {
     	// drive forward for 2 seconds (from 1-3 seconds)
     	if (currentPeriodtimeSincePeriodStartMs < 3000 && currentPeriodtimeSincePeriodStartMs > 1000)
     	{
-    		//_armMotor.set(0);
+    		_armMotor.set(0);
     		gyroFollow(0.5,0); 	// drive forwards half speed
     	}
     	else // stop
@@ -162,6 +165,9 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() 
     {
+    	//SmartDashboard.putNumber("Pulse Count:", _testEncoded.getRawCount());
+    	//_testEncoder.setSpeed( xbox.getRawAxis(1) / 4 );
+    	
     	
     	processButtons();
     	drive();
