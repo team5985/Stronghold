@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Joystick.RumbleType;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.SPI;
-//import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -26,6 +25,7 @@ import edu.wpi.first.wpilibj.ADXRS450_Gyro;
  * directory.
  */
 public class Robot extends IterativeRobot {
+
 	// Constants for Robot Ports
 	// PWM
 	int PWM_LEFT_MOTOR_CONTROLLER_PORT = 0;
@@ -35,89 +35,81 @@ public class Robot extends IterativeRobot {
 	
 	// DIO Ports used on the Rio
 	int DIO_INTAKE_SWITCH_PORT  = 1;
+
+	//Power Preset constants
+	int driveType = -1;
 	
+	final int DRIVE_FREE = -1;
+	final int DRIVE_BRAKE = 0;
+	final int DRIVE_LOW = 1;
+	final int DRIVE_MEDIUM = 2;
+	final int DRIVE_HIGH = 3;
+		
+	final double LOW_POWER = 0.2;
+	final double MEDIUM_POWER = 0.4;
+	final double HIGH_POWER = 0.6;
+	
+	//Member Objects
 	Arm _arm;
 	Intake _intake;
-	
-	//RobotDrive myRobot;
 	
 	Joystick stick;
 	Joystick xbox;
 	
 	CameraServer camera1;
-	//CameraServer camera2;
 	
 	Victor driveLeft;
 	Victor driveRight;
 	VictorSP _intakeMotor;
 	VictorSP _armMotor;
 	
-	Encoder intakeEncoder;
 	Encoder armEncoder;
 	
-	//ADXRS450_Gyro _gyro;
+	ADXRS450_Gyro _gyro;
 	private static final double GYRO_GAIN = 0.008;
 	double gyroTarget;
 	DigitalInput lineSensor;
 	DigitalInput intakeSwitch;
 	
-	I2C gestureSensor;
-	byte[] gestureOutput;
-	
-	//SPI gyro;
-
 	int autoLoopCounter;
 	long periodicStartMs;
 	
+
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
     public void robotInit() {
     	
-    	
-//    	myRobot = new RobotDrive(0,1);
     	driveLeft = new Victor(PWM_LEFT_MOTOR_CONTROLLER_PORT);
     	driveRight = new Victor(PWM_RIGHT_MOTOR_CONTROLLER_PORT);
    
     	_armMotor = new VictorSP(PWM_ARM_MOTOR_CONTROLLER_PORT);
     	
-    	//gestureSensor = new I2C(I2C.Port.kOnboard, 0x39);
-    	//gestureOutput = new byte[200];
-    	
-    	//intakeEncoder = new Encoder(2,3,false,Encoder.EncodingType.k4X);
     	//armEncoder = new Encoder(4,5,false,Encoder.EncodingType.k4X);
     	
     	stick = new Joystick(0);
         xbox =	 new Joystick(1);
         
-    	_intake = new Intake(PWM_INTAKE_MOTOR_CONTROLLER_PORT, DIO_INTAKE_SWITCH_PORT);
-    	
+    	_intake = new Intake(PWM_INTAKE_MOTOR_CONTROLLER_PORT, DIO_INTAKE_SWITCH_PORT); 	
     	_arm = new Arm(_armMotor,xbox);
-    	//_gyro = new ADXRS450_Gyro();
-    	//_gyro.reset();
-    	//_gyro.calibrate();
-    	gyroTarget = 0;
     	
-//    	lineSensor = new DigitalInput(0);
+    	_gyro = new ADXRS450_Gyro();
+    	_gyro.reset();
+    	_gyro.calibrate();
+    	gyroTarget = 0;
     	
     	camera1 = CameraServer.getInstance();
     	camera1.setQuality(50);
     	camera1.startAutomaticCapture("cam0");
-    	/*camera2 = CameraServer.getInstance();
-    	camera2.setQuality(50);
-    	camera2.startAutomaticCapture("cam1");*/
-    	
-    	//gyro = new SPI(0);
-    	
-    	//System.out.println("Gyro:" + _gyro.getAngle());
+    	    	
     }
     
     /**
      * This function is run once each time the robot enters autonomous mode
      */
     public void autonomousInit() {
-    	System.out.println("autonomousInit: STARTED");
+		System.out.println("autonomousInit: STARTED");
     	
     	SmartDashboard.putString("test", "Test");
     	
@@ -126,11 +118,10 @@ public class Robot extends IterativeRobot {
     	//start time for auto period 
     	periodicStartMs = System.currentTimeMillis();
     	
-    	//_gyro.reset();
+    	_gyro.reset();
     	
-    	
-    	
-    	//intakeEncoder.reset();
+    	//int gameSelector = (int) SmartDashboard.getNumber("Auto Selector");
+    	//System.out.println(gameSelector);
     	
     	_arm.init();
     }
@@ -146,21 +137,22 @@ public class Robot extends IterativeRobot {
     	{
     		//set target direction to Forwards, move arm and wait till reset gyro is complete  
         	gyroTarget = 0;
-    		_armMotor.set(-0.6);
+    		//_armMotor.set(-0.6);
     	}
     	
     	
     	
-    	// drive forward for 5 seconds (from 1- 6 seconds)
-    	if (currentPeriodtimeSincePeriodStartMs < 2000 && currentPeriodtimeSincePeriodStartMs > 1000)//6000 && currentPeriodtimeSincePeriodStartMs > 1000)
+    	// drive forward for 2 seconds (from 1-3 seconds)
+    	if (currentPeriodtimeSincePeriodStartMs < 3000 && currentPeriodtimeSincePeriodStartMs > 1000)
     	{
-    		_armMotor.set(0);
+    		//_armMotor.set(0);
     		gyroFollow(0.5); 	// drive forwards half speed
     	}
     	else // stop
     	{
-    		System.out.println("Stop Gyro Drive (5 Seconds)");
-			driveLeft.set(0); 	// stop robot
+    		//System.out.println("Gyro Drive Finished: 2 Seconds");
+    	 	// stop robot
+    		driveLeft.set(0);
 			driveRight.set(0);
 		}
     }
@@ -178,14 +170,10 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() 
     {
+    	processButtons();
     	drive();
     	_intake.periodic(stick);
     	_arm.periodic();
-    	if (stick.getRawButton(7))
-    	{
-    		System.out.println("Gyro RESET");
-    		//_gyro.reset();
-    	}
     	if (_intake.hasBoulder())
     	{
     		xbox.setRumble(RumbleType.kLeftRumble, 1);
@@ -194,21 +182,16 @@ public class Robot extends IterativeRobot {
     	{
     		xbox.setRumble(RumbleType.kLeftRumble, 0);
     	}
-    	//System.out.println("Gyro:" + _gyro.getAngle());
-    	//System.out.println("Rate:" + _gyro.getRate());
-    	/*gestureSensor.read(0x08, 1, gestureOutput); //X coord
-		String output = new String(gestureOutput);
-    	System.out.println("X coords" + output);
-    	gestureSensor.read(0x0a, 1, gestureOutput); //Z coord
-		output = new String(gestureOutput);
-    	System.out.println("Z coords" + output);
-    	*/
-    	
-    	
     	
     	//System.out.println("Arm encoder distance: " + armEncoder.getDistance());
     	//System.out.println("Intake encoder distance: " + armEncoder.getDistance());
     	System.out.println("teleopPeriodic: Stick x = " + stick.getX() + " y = " + stick.getY());
+    	
+    	SmartDashboard.putNumber("Gyro Angle:", _gyro.getAngle());
+    	SmartDashboard.putNumber("Gyro Rate:", _gyro.getRate());
+    	SmartDashboard.putString("Mode", "Teleop");
+    	SmartDashboard.putNumber("Stick X Value", stick.getX());
+    	SmartDashboard.putNumber("Stick Y Value", stick.getY());
     }
     
     /**
@@ -223,13 +206,74 @@ public class Robot extends IterativeRobot {
     	xbox.setRumble(RumbleType.kLeftRumble, 0);
     }
     
+
+    /*
+     * Process Buttons:
+     * Takes the input from the controller buttons and handles them appropriately
+     * 
+     */
+    private void processButtons()
+    {
+    	if (stick.getRawButton(11)) driveType = DRIVE_LOW;
+    	else if (stick.getRawButton(12)) driveType = DRIVE_MEDIUM;
+    	else if (stick.getRawButton(10)) driveType = DRIVE_HIGH;
+    	else if (stick.getRawButton(3)) driveType = DRIVE_BRAKE;
+    	else if (stick.getRawButton(9)) driveType = DRIVE_FREE;
+    	
+    	if (stick.getRawButton(7))
+    	{
+    		System.out.println("Gyro RESET");
+    		_gyro.reset();
+    	}
+    }
     
+    /*
+     * Gets power modifier from the throttle or power preset and sets the power variable to it
+     * 
+     * 
+     */
+    private double getDriveModifier()
+    {
+    	double power = 0;
+    	
+    	//Sets the powerPreset setting
+    	switch (driveType)
+    	{
+
+			case DRIVE_FREE:
+				power = -(stick.getThrottle() - 1 ) / 2;
+				break;
+			
+    		case DRIVE_LOW: //20% Power
+    			power = LOW_POWER;
+    			break;
+    		
+    		case DRIVE_MEDIUM: //40%
+    			power = MEDIUM_POWER;
+    			break;
+    			
+    		case DRIVE_HIGH: //60%
+    			power = HIGH_POWER;
+    			break;
+    			
+    		case DRIVE_BRAKE: //Brake rather than coast
+    			power = 0;
+    			break;
+
+    		default:
+    			power = -(stick.getThrottle() - 1 ) / 2;
+    		break;
+    			
+    	}
+    	
+    	return power;
+    }
     private void drive()
     {
     	// Driving code for the robot
     	
     	//Sets the speedModifier to the throttle
-    	double speedModifier = (stick.getThrottle() - 1 ) / 2;
+    	double speedModifier = getDriveModifier();    	
     	
     	/*double POV = stick.getPOV(0);
     	
@@ -255,16 +299,17 @@ public class Robot extends IterativeRobot {
         	steering = steering * speedModifier;
         	power = power * speedModifier;
         	
-        	
         	//Applies above variables to variables that will be applied to the motors
-        	double leftPower = power + -steering;
-        	double rightPower = -power + -steering;
+        	double leftPower = -power + steering;
+        	double rightPower = power + steering;
         	
         	
         	//Displays the left and right motor powers and speed modifier
         	System.out.println("speedModifier:'" + speedModifier +"'");
         	System.out.println("leftPower:'" + leftPower +"' rightPower:'"+ rightPower +"'");
-        	
+        	SmartDashboard.putNumber("Speed Modifier", speedModifier);
+        	SmartDashboard.putNumber("Left Power", leftPower);
+        	SmartDashboard.putNumber("Right Power", rightPower);
         	//Sends the power variables to the motors
         	driveLeft.set(leftPower);
         	driveRight.set(rightPower);
@@ -317,11 +362,11 @@ public class Robot extends IterativeRobot {
     	double gyroPower = 0;
     	
     	
-    	//System.out.println("Gyro:" + _gyro.getAngle());
+    	System.out.println("Gyro:" + _gyro.getAngle());
     	
     	//Calculates how much to turn based on the current heading and the target heading
-    	//gyroPower = _gyro.getAngle() - gyroTarget;
-    	//gyroPower = gyroPower * GYRO_GAIN;
+    	gyroPower = _gyro.getAngle() - gyroTarget;
+    	gyroPower = gyroPower * GYRO_GAIN;
     	
     	double gyroMotorPowerLeft = basePower - gyroPower;
     	double gyroMotorPowerRight = -basePower - gyroPower;
@@ -330,6 +375,6 @@ public class Robot extends IterativeRobot {
     	driveLeft.set(gyroMotorPowerLeft);
     	driveRight.set(gyroMotorPowerRight);
     	
-    	//System.out.println("[Gyro:" + _gyro.getAngle() + "]    Motor [Left:" + gyroMotorPowerLeft + "][Right:" + gyroMotorPowerRight + "]");
+    	System.out.println("[Gyro:" + _gyro.getAngle() + "]    Motor [Left:" + gyroMotorPowerLeft + "][Right:" + gyroMotorPowerRight + "]");
     }
 }

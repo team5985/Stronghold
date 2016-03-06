@@ -39,7 +39,7 @@ public class Intake {
 		if (_stick.getRawButton(1) && !_intakeLimitSwitch.get())
 		{
 			//button 1 and boulder not completely in: suck in boulder	
-			_motor.set(-0.25);
+			_motor.set(-0.4);
 		}
 		else if (_stick.getRawButton(2))
 		{
