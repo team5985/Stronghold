@@ -3,8 +3,6 @@ package org.usfirst.frc.team5985.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Joystick.RumbleType;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
@@ -12,9 +10,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.Timer;
-
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 
 /**
@@ -67,7 +62,6 @@ public class Robot extends IterativeRobot {
 	
 	ADXRS450_Gyro _gyro;
 	private static final double GYRO_GAIN = 0.008;
-	double gyroTarget;
 	DigitalInput lineSensor;
 	DigitalInput intakeSwitch;
 	
@@ -97,7 +91,6 @@ public class Robot extends IterativeRobot {
     	_gyro = new ADXRS450_Gyro();
     	_gyro.reset();
     	_gyro.calibrate();
-    	gyroTarget = 0;
     	
     	camera1 = CameraServer.getInstance();
     	camera1.setQuality(50);
@@ -135,8 +128,7 @@ public class Robot extends IterativeRobot {
     	// First second of the auto period
     	if (currentPeriodtimeSincePeriodStartMs < 1000)
     	{
-    		//set target direction to Forwards, move arm and wait till reset gyro is complete  
-        	gyroTarget = 0;
+    		//Move arm and wait until reset gyro is complete  
     		//_armMotor.set(-0.6);
     	}
     	
@@ -146,7 +138,7 @@ public class Robot extends IterativeRobot {
     	if (currentPeriodtimeSincePeriodStartMs < 3000 && currentPeriodtimeSincePeriodStartMs > 1000)
     	{
     		//_armMotor.set(0);
-    		gyroFollow(0.5); 	// drive forwards half speed
+    		gyroFollow(0.5,0); 	// drive forwards half speed
     	}
     	else // stop
     	{
@@ -170,6 +162,7 @@ public class Robot extends IterativeRobot {
      */
     public void teleopPeriodic() 
     {
+    	
     	processButtons();
     	drive();
     	_intake.periodic(stick);
@@ -248,15 +241,15 @@ public class Robot extends IterativeRobot {
     			power = LOW_POWER;
     			break;
     		
-    		case DRIVE_MEDIUM: //40%
+    		case DRIVE_MEDIUM: //40% Power
     			power = MEDIUM_POWER;
     			break;
     			
-    		case DRIVE_HIGH: //60%
+    		case DRIVE_HIGH: //60% Power
     			power = HIGH_POWER;
     			break;
     			
-    		case DRIVE_BRAKE: //Brake rather than coast
+    		case DRIVE_BRAKE: //0% Power
     			power = 0;
     			break;
 
@@ -272,15 +265,17 @@ public class Robot extends IterativeRobot {
     {
     	// Driving code for the robot
     	
+    	
     	//Sets the speedModifier to the throttle
     	double speedModifier = getDriveModifier();    	
     	
-    	/*double POV = stick.getPOV(0);
+    	double POV = stick.getPOV(0);
+    	double turnAngle = 0;
     	
     	if (POV == -1) 
     	{
     		//Drives normally
-    	*/
+    	
     		//Gets stick values and sets variables for it
         	double steering = stick.getX();
         	double power = stick.getY();
@@ -313,59 +308,64 @@ public class Robot extends IterativeRobot {
         	//Sends the power variables to the motors
         	driveLeft.set(leftPower);
         	driveRight.set(rightPower);
-    	/*
+    	
     	 }
     	else 
     	{
     		//Gyro Drive
     		//makes the robot drive in the direction of the POV at 10% of speedModifier
     		
+    		    		
     		if (POV > -22.5 & POV < 22.5)
         	{
-        		gyroTarget = 0;
+        		turnAngle = 0;
         	}
     		else if (POV > 22.5 & POV < 67.5)
         	{
-        		gyroTarget = 45;
+        		turnAngle = 45;
+        		
         	}
     		else if (POV > 67.5 & POV < 112.5)
         	{
-        		gyroTarget = 90;
+        		turnAngle = 90;
         	}
     		else if (POV > 112.5 & POV < 157.5)
         	{
-        		gyroTarget = 135;
+        		turnAngle = 135;
         	}
     		else if (POV > 157.5 & POV < 202.5)
         	{
-        		gyroTarget = 180;
+        		turnAngle = 180;
         	}
     		else if (POV > 202.5 & POV < 247.5)
         	{
-        		gyroTarget = 225;
+        		turnAngle = -135;
         	}
     		else if (POV > 247.5 & POV < 292.5)
         	{
-        		gyroTarget = 270;
+        		turnAngle = -90;
         	}
     		else if (POV > 292.5 & POV < 337.5)
         	{
-        		gyroTarget = 315;
+        		turnAngle = -45;
         	}
-    		gyroFollow(speedModifier * 0.1);
-    	}*/
+    		gyroFollow(speedModifier,turnAngle);
+    	}
     	
     }
     
-    private void gyroFollow(double basePower)
+    private void gyroFollow(double basePower,double gyroTarget)
     {
+    	//proportionally drives in the direction of a gyro heading, turning to face the right direction
+    	
     	double gyroPower = 0;
+    	double modGyroAngle = _gyro.getAngle() % 360;
     	
-    	
-    	System.out.println("Gyro:" + _gyro.getAngle());
+    	if (modGyroAngle < (gyroTarget - 180))
+			{gyroTarget = gyroTarget - 360;}
     	
     	//Calculates how much to turn based on the current heading and the target heading
-    	gyroPower = _gyro.getAngle() - gyroTarget;
+    	gyroPower = modGyroAngle - gyroTarget;
     	gyroPower = gyroPower * GYRO_GAIN;
     	
     	double gyroMotorPowerLeft = basePower - gyroPower;
@@ -374,7 +374,10 @@ public class Robot extends IterativeRobot {
     	//Makes the motors move
     	driveLeft.set(gyroMotorPowerLeft);
     	driveRight.set(gyroMotorPowerRight);
+    		
+    	System.out.println("[Gyro:" + modGyroAngle + "]    Motor [Left:" + gyroMotorPowerLeft + "][Right:" + gyroMotorPowerRight + "]");
+    	SmartDashboard.putNumber("Corrected Gyro Angle:", modGyroAngle);
     	
-    	System.out.println("[Gyro:" + _gyro.getAngle() + "]    Motor [Left:" + gyroMotorPowerLeft + "][Right:" + gyroMotorPowerRight + "]");
+    
     }
 }
