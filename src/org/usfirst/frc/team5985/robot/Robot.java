@@ -320,8 +320,6 @@ public class Robot extends IterativeRobot {
     	{
     		//Gyro Drive
     		//makes the robot drive in the direction of the POV at 10% of speedModifier
-    		
-    		    		
     		if (POV > -22.5 & POV < 22.5)
         	{
         		turnAngle = 0;
@@ -329,7 +327,6 @@ public class Robot extends IterativeRobot {
     		else if (POV > 22.5 & POV < 67.5)
         	{
         		turnAngle = 45;
-        		
         	}
     		else if (POV > 67.5 & POV < 112.5)
         	{
