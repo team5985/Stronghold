@@ -34,14 +34,14 @@ public class Intake {
      * Button 1 sucks in the ball, unless it has the ball already.
      * button 2 shoots the ball.
      */
-	public void periodic(Joystick _stick)
+	public void handleEvents(DriverStation driverStation)
 	{ 	
-		if (_stick.getRawButton(1) && !_intakeLimitSwitch.get())
+		if (driverStation.stick.getRawButton(1) && !_intakeLimitSwitch.get())
 		{
 			//button 1 and boulder not completely in: suck in boulder	
 			_motor.set(-0.4);
 		}
-		else if (_stick.getRawButton(2))
+		else if (driverStation.stick.getRawButton(2))
 		{
 			//button 2: shoot out boulder
 			_motor.set(1);

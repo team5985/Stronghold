@@ -55,7 +55,7 @@ public class Robot extends IterativeRobot {
 	VictorSP _armMotor;
 	
 
-	Joystick xbox;
+	CameraServer camera1;
 	
 	//Encoder armEncoder;
 	
@@ -80,14 +80,13 @@ public class Robot extends IterativeRobot {
     	driveLeft = new Victor(PWM_LEFT_MOTOR_CONTROLLER_PORT);
     	driveRight = new Victor(PWM_RIGHT_MOTOR_CONTROLLER_PORT);
    
-    	xbox =	 new Joystick(1);
     	
     	//_testEncoder = new PBEncoder(PWM_ARM_MOTOR_CONTROLLER_PORT, 8, 9);
     	
     	//armEncoder = new Encoder(4,5,false,Encoder.EncodingType.k4X);
     	
     	_intake = new Intake(PWM_INTAKE_MOTOR_CONTROLLER_PORT, DIO_INTAKE_SWITCH_PORT); 	
-    	_arm = new Arm(PWM_ARM_MOTOR_CONTROLLER_PORT, 0);
+    	_arm = new Arm(PWM_ARM_MOTOR_CONTROLLER_PORT);
     	
     	_gyro = new ADXRS450_Gyro();
     	_gyro.reset();
@@ -159,33 +158,31 @@ public class Robot extends IterativeRobot {
     /**
      * This function is called periodically during operator control
      */
-    public void teleopPeriodic() 
+    public void teleopPeriodic(DriverStation driverStation) 
     {
     	//SmartDashboard.putNumber("Pulse Count:", _testEncoded.getRawCount());
     	//_testEncoder.setSpeed( xbox.getRawAxis(1) / 4 );
     	
     	processButtons();
-    	drive();
-    	_intake.periodic(stick);
-    	_arm.periodic();
+    	drive(driverStation);
+    	_intake.handleEvents(driverStation);
+    	_arm.handleEvents(driverStation);
     	if (_intake.hasBoulder())
     	{
-    		xbox.setRumble(RumbleType.kLeftRumble, 1);
+    		driverStation.xbox.setRumble(RumbleType.kLeftRumble, 1);
     	}
     	else 
     	{
-    		xbox.setRumble(RumbleType.kLeftRumble, 0);
+    		driverStation.xbox.setRumble(RumbleType.kLeftRumble, 0);
     	}
     	
     	//System.out.println("Arm encoder distance: " + armEncoder.getDistance());
     	//System.out.println("Intake encoder distance: " + armEncoder.getDistance());
-    	System.out.println("teleopPeriodic: Stick x = " + stick.getX() + " y = " + stick.getY());
+    	System.out.println("teleopPeriodic: Stick x = " + driverStation.stick.getX() + " y = " + driverStation.stick.getY());
     	
-    	SmartDashboard.putNumber("Gyro Angle:", _gyro.getAngle());
-    	SmartDashboard.putNumber("Gyro Rate:", _gyro.getRate());
+
     	SmartDashboard.putString("Mode", "Teleop");
-    	SmartDashboard.putNumber("Stick X Value", stick.getX());
-    	SmartDashboard.putNumber("Stick Y Value", stick.getY());
+    	
     }
     
     /**
@@ -262,7 +259,7 @@ public class Robot extends IterativeRobot {
     	
     	return power;
     }
-    private void drive()
+    private void drive(DriverStation driverStation)
     {
     	// Driving code for the robot
     	
@@ -270,7 +267,7 @@ public class Robot extends IterativeRobot {
     	//Sets the speedModifier to the throttle
     	double speedModifier = getDriveModifier();    	
     	
-    	double POV = stick.getPOV(0);
+    	double POV = driverStation.stick.getPOV(0);
     	double turnAngle = 0;
     	
     	if (POV == -1) 
@@ -278,8 +275,8 @@ public class Robot extends IterativeRobot {
     		//Drives normally
     	
     		//Gets stick values and sets variables for it
-        	double steering = stick.getX();
-        	double power = stick.getY();
+        	double steering = driverStation.stick.getX();
+        	double power = driverStation.stick.getY();
         	
         	//corrects for the stick not being 100% zeroed
         	if (steering < 0.1 && steering > -0.1)
@@ -303,9 +300,7 @@ public class Robot extends IterativeRobot {
         	//Displays the left and right motor powers and speed modifier
         	System.out.println("speedModifier:'" + speedModifier +"'");
         	System.out.println("leftPower:'" + leftPower +"' rightPower:'"+ rightPower +"'");
-        	SmartDashboard.putNumber("Speed Modifier", speedModifier);
-        	SmartDashboard.putNumber("Left Power", leftPower);
-        	SmartDashboard.putNumber("Right Power", rightPower);
+        	
         	//Sends the power variables to the motors
         	driveLeft.set(leftPower);
         	driveRight.set(rightPower);

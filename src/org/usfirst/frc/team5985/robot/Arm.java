@@ -18,44 +18,37 @@ public class Arm {
 	private DigitalInput _limitSwitchDown;
 	//private Encoder _encoder;
 	private final double ARM_SPEED = 0.75;//1;
-	private double _xBox;
+	private double _xbox;
 	
-	public Arm(int MotorIn, double XboxIn) 
+	public Arm(int MotorIn) 
 	{
     	//encoder = new Encoder(0, 1);
     	//encoder.setDistancePerPulse(10); //Can be any unit
     	_limitSwitchUp = new DigitalInput(3);
     	_limitSwitchDown = new DigitalInput(2);
-    	_motor = = new VictorSP(MotorIn);
-    	_xBox = XboxIn;
+    	_motor = new VictorSP(MotorIn);
 	}
-	
-	/*private double _xBox
-	{
-		return _xBox.getRawAxis(1);
-		
-	}*/
 	
 	public void init()
 	{
 		//encoder.reset();
 	}
 	
-    public void periodic()
+    public void handleEvents(DriverStation driverStation)
     {
     	
-    	System.out.println("XBox: " + _xBox);    	
+    	System.out.println("Xbox: " + _xbox);    	
     	
-    	if (_xBox > 0.25)// && !_limitSwitchDown.get())
+    	if (_xbox > 0.25)// && !_limitSwitchDown.get())
     	{
     		//if trying to move down and limit switch pressed, stop moving
-    		_motor.set(-_xBox * ARM_SPEED);
+    		_motor.set(-_xbox * ARM_SPEED);
     	}    	
 
-    	else if (_xBox < -0.25)// && !_limitSwitchUp.get())
+    	else if (_xbox < -0.25)// && !_limitSwitchUp.get())
     	{	
     		//if trying to move up and limit switch pressed, stop moving
-    		_motor.set(-_xBox * ARM_SPEED);
+    		_motor.set(-_xbox * ARM_SPEED);
     	}
     	else
     	{
