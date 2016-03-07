@@ -18,23 +18,23 @@ public class Arm {
 	private DigitalInput _limitSwitchDown;
 	//private Encoder _encoder;
 	private final double ARM_SPEED = 0.75;//1;
-	private Joystick _xBox;
+	private double _xBox;
 	
-	public Arm(VictorSP MotorIn, Joystick XboxIn) 
+	public Arm(int MotorIn, double XboxIn) 
 	{
     	//encoder = new Encoder(0, 1);
     	//encoder.setDistancePerPulse(10); //Can be any unit
     	_limitSwitchUp = new DigitalInput(3);
     	_limitSwitchDown = new DigitalInput(2);
-    	_motor = MotorIn;
+    	_motor = = new VictorSP(MotorIn);
     	_xBox = XboxIn;
 	}
 	
-	private double GetYAxis()
+	/*private double _xBox
 	{
 		return _xBox.getRawAxis(1);
 		
-	}
+	}*/
 	
 	public void init()
 	{
@@ -44,18 +44,18 @@ public class Arm {
     public void periodic()
     {
     	
-    	System.out.println("XBox: " + GetYAxis());    	
+    	System.out.println("XBox: " + _xBox);    	
     	
-    	if (GetYAxis() > 0.25)// && !_limitSwitchDown.get())
+    	if (_xBox > 0.25)// && !_limitSwitchDown.get())
     	{
     		//if trying to move down and limit switch pressed, stop moving
-    		_motor.set(-GetYAxis() * ARM_SPEED);
+    		_motor.set(-_xBox * ARM_SPEED);
     	}    	
 
-    	else if (GetYAxis() < -0.25)// && !_limitSwitchUp.get())
+    	else if (_xBox < -0.25)// && !_limitSwitchUp.get())
     	{	
     		//if trying to move up and limit switch pressed, stop moving
-    		_motor.set(-GetYAxis() * ARM_SPEED);
+    		_motor.set(-_xBox * ARM_SPEED);
     	}
     	else
     	{

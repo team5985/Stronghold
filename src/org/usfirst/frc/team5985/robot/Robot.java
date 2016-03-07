@@ -1,16 +1,17 @@
 package org.usfirst.frc.team5985.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Joystick.RumbleType;
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Joystick.RumbleType;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -48,15 +49,13 @@ public class Robot extends IterativeRobot {
 	Arm _arm;
 	Intake _intake;
 	
-	Joystick stick;
-	Joystick xbox;
-	
-	CameraServer camera1;
-	
 	Victor driveLeft;
 	Victor driveRight;
 	VictorSP _intakeMotor;
 	VictorSP _armMotor;
+	
+
+	Joystick xbox;
 	
 	//Encoder armEncoder;
 	
@@ -68,8 +67,9 @@ public class Robot extends IterativeRobot {
 	int autoLoopCounter;
 	long periodicStartMs;
 	
+	
 	// testing encoded
-	//PBEncoder _testEncoder;
+	//PBEncoder _testEncoder;	
 
     /**
      * This function is run when the robot is first started up and should be
@@ -80,24 +80,20 @@ public class Robot extends IterativeRobot {
     	driveLeft = new Victor(PWM_LEFT_MOTOR_CONTROLLER_PORT);
     	driveRight = new Victor(PWM_RIGHT_MOTOR_CONTROLLER_PORT);
    
-    	_armMotor = new VictorSP(PWM_ARM_MOTOR_CONTROLLER_PORT);
+    	xbox =	 new Joystick(1);
+    	
     	//_testEncoder = new PBEncoder(PWM_ARM_MOTOR_CONTROLLER_PORT, 8, 9);
     	
     	//armEncoder = new Encoder(4,5,false,Encoder.EncodingType.k4X);
     	
-    	stick = new Joystick(0);
-        xbox =	 new Joystick(1);
-        
     	_intake = new Intake(PWM_INTAKE_MOTOR_CONTROLLER_PORT, DIO_INTAKE_SWITCH_PORT); 	
-    	_arm = new Arm(_armMotor,xbox);
+    	_arm = new Arm(PWM_ARM_MOTOR_CONTROLLER_PORT, 0);
     	
     	_gyro = new ADXRS450_Gyro();
     	_gyro.reset();
     	_gyro.calibrate();
     	
-    	camera1 = CameraServer.getInstance();
-    	camera1.setQuality(50);
-    	camera1.startAutomaticCapture("cam0");
+    	
     	    	
     }
     
@@ -167,7 +163,6 @@ public class Robot extends IterativeRobot {
     {
     	//SmartDashboard.putNumber("Pulse Count:", _testEncoded.getRawCount());
     	//_testEncoder.setSpeed( xbox.getRawAxis(1) / 4 );
-    	
     	
     	processButtons();
     	drive();
@@ -354,7 +349,16 @@ public class Robot extends IterativeRobot {
         	}
     		gyroFollow(speedModifier,turnAngle);
     	}
-    	
+ /*angle < target
+steering = 1
+
+angle > target
+steering = -1
+
+power = speedmodifier
+
+driveleft
+driveright*/   	
     }
     
     private void gyroFollow(double basePower,double gyroTarget)
