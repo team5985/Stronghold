@@ -163,7 +163,7 @@ public class Robot extends IterativeRobot {
     	//SmartDashboard.putNumber("Pulse Count:", _testEncoded.getRawCount());
     	//_testEncoder.setSpeed( xbox.getRawAxis(1) / 4 );
     	
-    	processButtons();
+    	processButtons(driverStation);
     	drive(driverStation);
     	_intake.handleEvents(driverStation);
     	_arm.handleEvents(driverStation);
@@ -194,7 +194,7 @@ public class Robot extends IterativeRobot {
     
     public void disabledInit() 
     {
-    	xbox.setRumble(RumbleType.kLeftRumble, 0);
+    	//xbox.setRumble(RumbleType.kLeftRumble, 0);
     }
     
 
@@ -203,15 +203,15 @@ public class Robot extends IterativeRobot {
      * Takes the input from the controller buttons and handles them appropriately
      * 
      */
-    private void processButtons()
+    private void processButtons(DriverStation driverStation)
     {
-    	if (stick.getRawButton(11)) driveType = DRIVE_LOW;
-    	else if (stick.getRawButton(12)) driveType = DRIVE_MEDIUM;
-    	else if (stick.getRawButton(10)) driveType = DRIVE_HIGH;
-    	else if (stick.getRawButton(3)) driveType = DRIVE_BRAKE;
-    	else if (stick.getRawButton(9)) driveType = DRIVE_FREE;
+    	if (driverStation.stick.getRawButton(11)) driveType = DRIVE_LOW;
+    	else if (driverStation.stick.getRawButton(12)) driveType = DRIVE_MEDIUM;
+    	else if (driverStation.stick.getRawButton(10)) driveType = DRIVE_HIGH;
+    	else if (driverStation.stick.getRawButton(3)) driveType = DRIVE_BRAKE;
+    	else if (driverStation.stick.getRawButton(9)) driveType = DRIVE_FREE;
     	
-    	if (stick.getRawButton(7))
+    	if (driverStation.stick.getRawButton(7))
     	{
     		System.out.println("Gyro RESET");
     		_gyro.reset();
@@ -223,7 +223,7 @@ public class Robot extends IterativeRobot {
      * 
      * 
      */
-    private double getDriveModifier()
+    private double getDriveModifier(DriverStation driverStation)
     {
     	double power = 0;
     	
@@ -232,7 +232,7 @@ public class Robot extends IterativeRobot {
     	{
 
 			case DRIVE_FREE:
-				power = -(stick.getThrottle() - 1 ) / 2;
+				power = -(driverStation.stick.getThrottle() - 1 ) / 2;
 				break;
 			
     		case DRIVE_LOW: //20% Power
@@ -252,7 +252,7 @@ public class Robot extends IterativeRobot {
     			break;
 
     		default:
-    			power = -(stick.getThrottle() - 1 ) / 2;
+    			power = -(driverStation.stick.getThrottle() - 1 ) / 2;
     		break;
     			
     	}
@@ -265,7 +265,7 @@ public class Robot extends IterativeRobot {
     	
     	
     	//Sets the speedModifier to the throttle
-    	double speedModifier = getDriveModifier();    	
+    	double speedModifier = driverStation.stick.getRawAxis(3);    	
     	
     	double POV = driverStation.stick.getPOV(0);
     	double turnAngle = 0;
@@ -342,20 +342,38 @@ public class Robot extends IterativeRobot {
         	{
         		turnAngle = -45;
         	}
-    		gyroFollow(speedModifier,turnAngle);
+    		gyroTurn(speedModifier,turnAngle, 45);
     	}
- /*angle < target
-steering = 1
-
-angle > target
-steering = -1
-
-power = speedmodifier
-
-driveleft
-driveright*/   	
     }
+ 
+    private void gyroTurn(double power,double target, double threshold)
+    {
+    	//turns to face a gyro heading, then gyro follows when within specified number of degrees
+    	
+    	double steering = 0;
+    	double modGyroAngle = _gyro.getAngle() % 360;
+    	
+    	if (modGyroAngle < (target - 180))
+			{target = target - 360;}
+    	
+    	//Calculates how much to turn based on the current heading and the target heading
+    	if (modGyroAngle < (target - threshold)){
+    		steering = 1;
+    		driveLeft.set(-power + steering);
+        	driveRight.set(power + steering);
+    	}
+    	else if (modGyroAngle > (target + threshold)){
+    		steering = -1;
+    		driveLeft.set(-power + steering);
+        	driveRight.set(power + steering);
+    	}
+    	
+    	else {
+    		gyroFollow(power, target);
+    	}
+    	
     
+    }
     private void gyroFollow(double basePower,double gyroTarget)
     {
     	//proportionally drives in the direction of a gyro heading, turning to face the right direction

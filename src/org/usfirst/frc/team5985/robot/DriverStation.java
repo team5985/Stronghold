@@ -23,8 +23,8 @@ public class DriverStation {
 	public void teleopPeriodic(Robot robot) {
 		
 		//Feeds info to Smart Dashboard
-		double leftPower = -stick.getY() + stick.getX();
-    	double rightPower = stick.getY() + stick.getX();
+		double leftPower = (-stick.getY() + stick.getX()) * stick.getRawAxis(3);	//fix speedmodifier
+    	double rightPower = (stick.getY() + stick.getX()) * stick.getRawAxis(3);
 		SmartDashboard.putNumber("Stick X Value (Steering)", stick.getX());
     	SmartDashboard.putNumber("Stick Y Value (Power)", stick.getY());
     	SmartDashboard.putNumber("Stick Slider (Speed Modifier)", stick.getRawAxis(3));
