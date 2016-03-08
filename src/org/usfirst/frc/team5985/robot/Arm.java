@@ -33,7 +33,10 @@ public class Arm {
 	{
 		//encoder.reset();
 	}
-	
+	public void auto(double input)
+	{
+		_motor.set(input * ARM_SPEED);
+	}
     public void handleEvents(DriverStation driverStation)
     {
     	
