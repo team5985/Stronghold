@@ -147,7 +147,7 @@ public class Robot extends IterativeRobot {
     	
 
     	SmartDashboard.putString("Mode", "Teleop");
-    	
+    	SmartDashboard.putBoolean("Boulder Switch Released", _intake.hasBoulder());
     }
     
     /**

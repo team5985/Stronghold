@@ -75,9 +75,9 @@ public class Drive {
             	
             	
             	//Displays the left and right motor powers and speed modifier
-            	System.out.println("speedModifier:'" + speedModifier +"'");
-            	System.out.println("leftPower:'" + leftPower +"' rightPower:'"+ rightPower +"'");
-            	
+            	SmartDashboard.putNumber("SpeedModifier", speedModifier);
+            	SmartDashboard.putNumber("Left Power", leftPower);
+            	SmartDashboard.putNumber("Right Power", rightPower);
             	//Sends the power variables to the motors
             	driveLeft.set(leftPower);
             	driveRight.set(rightPower);
@@ -206,7 +206,9 @@ public class Drive {
         	//Makes the motors move
         	driveLeft.set(gyroMotorPowerLeft);
         	driveRight.set(gyroMotorPowerRight);
-        		
+
+        	SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
+        	SmartDashboard.putNumber("Gyro Rate", gyro.getRate());	
         	SmartDashboard.putNumber("Corrected Gyro Angle:", modGyroAngle);
         	
         
