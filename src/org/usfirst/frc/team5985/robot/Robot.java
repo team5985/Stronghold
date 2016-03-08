@@ -1,13 +1,8 @@
 package org.usfirst.frc.team5985.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Victor;
-import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Joystick.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -22,11 +17,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot {
 
 	//Member Objects
+		Drive robotDrive;
 		Arm _arm;
 		Intake _intake;
-		
-		Drive robotDrive;
-		
 		CameraServer camera1;
 		
 		//Encoder armEncoder;
@@ -42,21 +35,7 @@ public class Robot extends IterativeRobot {
 	
 	// DIO Ports used on the Rio
 	int DIO_INTAKE_SWITCH_PORT  = 1;
-	
-	//Power Preset constants
-			int driveType = -1;
 			
-			final int DRIVE_FREE = -1;
-			final int DRIVE_BRAKE = 0;
-			final int DRIVE_LOW = 1;
-			final int DRIVE_MEDIUM = 2;
-			final int DRIVE_HIGH = 3;
-				
-			final double LOW_POWER = 0.2;
-			final double MEDIUM_POWER = 0.4;
-			final double HIGH_POWER = 0.6;
-	
-	
 	int autoLoopCounter;
 	long periodicStartMs;
 	
@@ -66,12 +45,11 @@ public class Robot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit(DriverStation driverStation) {
-    	robotDrive = new Drive(PWM_LEFT_MOTOR_CONTROLLER_PORT,PWM_RIGHT_MOTOR_CONTROLLER_PORT);
-
-    	//driveLeft = new Victor(PWM_LEFT_MOTOR_CONTROLLER_PORT);
-    	//driveRight = new Victor(PWM_RIGHT_MOTOR_CONTROLLER_PORT);
-   
+    	camera1 = CameraServer.getInstance();
+    	driverStation.driverInit(camera1);
     	
+    	robotDrive = new Drive(PWM_LEFT_MOTOR_CONTROLLER_PORT,PWM_RIGHT_MOTOR_CONTROLLER_PORT);
+ 	
     	//_testEncoder = new PBEncoder(PWM_ARM_MOTOR_CONTROLLER_PORT, 8, 9);
     	
     	//armEncoder = new Encoder(4,5,false,Encoder.EncodingType.k4X);
@@ -79,8 +57,6 @@ public class Robot extends IterativeRobot {
     	_intake = new Intake(PWM_INTAKE_MOTOR_CONTROLLER_PORT, DIO_INTAKE_SWITCH_PORT); 	
     	_arm = new Arm(PWM_ARM_MOTOR_CONTROLLER_PORT);
     	
-    	
-    	driverStation.driverInit(camera1);
     	
     	    	
     }

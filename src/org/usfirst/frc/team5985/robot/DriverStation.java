@@ -14,7 +14,6 @@ public class DriverStation {
 		stick = new Joystick(0);
         xbox =	 new Joystick(1);
         
-        camera1 = CameraServer.getInstance();
     	camera1.setQuality(50);
     	camera1.startAutomaticCapture("cam0");
 		
