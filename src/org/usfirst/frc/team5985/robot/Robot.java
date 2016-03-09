@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Joystick.RumbleType;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -13,19 +13,19 @@ import edu.wpi.first.wpilibj.Joystick.RumbleType;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
-public class Robot extends IterativeRobot {
-
+public class Robot extends IterativeRobot 
+{
 	//Member Objects
-		DriveTrain robotDrive;
-		Arm _arm;
-		Intake _intake;
-		CameraServer camera1;
+	DriverStation driverStation;
+	DriveTrain robotDrive;
+	Arm _arm;
+	Intake _intake;
+	CameraServer camera1;
+	//Encoder armEncoder;
+	//PBEncoder _testEncoder;
 		
-		//Encoder armEncoder;
-		//PBEncoder _testEncoder;
 		
-		
-		// Constants for Robot Ports
+	// Constants for Robot Ports
 	// PWM
 	int PWM_LEFT_MOTOR_CONTROLLER_PORT = 0;
 	int PWM_RIGHT_MOTOR_CONTROLLER_PORT = 9;
@@ -34,36 +34,35 @@ public class Robot extends IterativeRobot {
 	
 	// DIO Ports used on the Rio
 	int DIO_INTAKE_SWITCH_PORT  = 1;
-			
-	int autoLoopCounter;
-	long periodicStartMs;
+	
+	//Internal member variables
+	int autoLoopCounter; //How long in auto?
+	long periodicStartMs; 
 	
 	
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
      */
-    public void robotInit(DriverStation driverStation) {
+    public void robotInit() {
+    	//System.out.println("robotInit: Called!");
+    	
     	camera1 = CameraServer.getInstance();
-    	driverStation.driverInit(camera1);
+    	driverStation = new DriverStation(camera1);
     	
     	robotDrive = new DriveTrain(PWM_LEFT_MOTOR_CONTROLLER_PORT,PWM_RIGHT_MOTOR_CONTROLLER_PORT);
  	
     	//_testEncoder = new PBEncoder(PWM_ARM_MOTOR_CONTROLLER_PORT, 8, 9);
-    	
     	//armEncoder = new Encoder(4,5,false,Encoder.EncodingType.k4X);
     	
     	_intake = new Intake(PWM_INTAKE_MOTOR_CONTROLLER_PORT, DIO_INTAKE_SWITCH_PORT); 	
     	_arm = new Arm(PWM_ARM_MOTOR_CONTROLLER_PORT);
-    	
-    	
-    	    	
     }
     
     /**
      * This function is run once each time the robot enters autonomous mode
      */
-    public void autonomousInit(DriveTrain driveTrain) {
+    public void autonomousInit() {
 		System.out.println("autonomousInit: STARTED");
     	
     	autoLoopCounter = 0;
@@ -71,10 +70,7 @@ public class Robot extends IterativeRobot {
     	//start time for auto period 
     	periodicStartMs = System.currentTimeMillis();
     	
-    	driveTrain.gyro.reset();
-    	
-    	//int gameSelector = (int) SmartDashboard.getNumber("Auto Selector");
-    	//System.out.println(gameSelector);
+    	robotDrive.gyro.reset();
     	
     	_arm.init();
     }
@@ -82,28 +78,28 @@ public class Robot extends IterativeRobot {
     /**
      * This function is called periodically during autonomous
      */
-    public void autonomousPeriodic(DriveTrain driveTrain) {
+    public void autonomousPeriodic() {
     	
     	long currentPeriodtimeSincePeriodStartMs = System.currentTimeMillis() - periodicStartMs;
     	// First second of the auto period
     	if (currentPeriodtimeSincePeriodStartMs < 1000)
     	{
     		//Move arm and wait until reset gyro is complete  
-    		_arm.auto(-0.6);	//test arm movement
+    		//_arm.auto(-0.7);	//test arm movement
     	}
     	
     	
     	
     	// drive forward for 2 seconds (from 1-3 seconds)
-    	if (currentPeriodtimeSincePeriodStartMs < 3000 && currentPeriodtimeSincePeriodStartMs > 1000)
+    	if (currentPeriodtimeSincePeriodStartMs < 4000 && currentPeriodtimeSincePeriodStartMs > 1000)
     	{
     		_arm.auto(0);
-    		driveTrain.gyroFollow(0.5, 0); 	// drive forwards half speed
+    		robotDrive.gyroFollow(0.5, 0); 	// drive forwards half speed
     	}
     	else 
     	{
     	 	// stop robot
-    		driveTrain.auto(0);
+    		robotDrive.auto(0);
 		}
     }
     
@@ -112,19 +108,19 @@ public class Robot extends IterativeRobot {
      */
     public void teleopInit(){
     	System.out.println("teleopInit: Called");
-    	_arm.init();
+    	//_arm.init();
     }
 
     /**
      * This function is called periodically during operator control
      */
-    public void teleopPeriodic(DriverStation driverStation, DriveTrain driveTrain) 
+    public void teleopPeriodic() 
     {
     	//SmartDashboard.putNumber("Pulse Count:", _testEncoded.getRawCount());
     	//_testEncoder.setSpeed( xbox.getRawAxis(1) / 4 );
     	driverStation.driverPeriodic();
-    	driveTrain.processButtons(driverStation);
-    	driveTrain.teleopDrive(driverStation);
+    	robotDrive.processButtons(driverStation);
+    	robotDrive.teleopDrive(driverStation);
     	_intake.handleEvents(driverStation);
     	_arm.handleEvents(driverStation);
     	if (_intake.hasBoulder())

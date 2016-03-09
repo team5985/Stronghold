@@ -8,8 +8,8 @@ public class DriveTrain {
 	Victor driveLeft;
 	Victor driveRight;
 	ADXRS450_Gyro gyro;
-	private static final double GYRO_GAIN = 0.008;
-	double modGyroAngle = gyro.getAngle() % 360;
+	private static final double GYRO_GAIN = 0.05;//0.008;
+	double modGyroAngle;
 	//Power Preset constants
 	int driveType = -1;
 	
@@ -27,6 +27,7 @@ public class DriveTrain {
 		
 		driveLeft = new Victor(leftMotorPort);
     	driveRight = new Victor(rightMotorPort);
+    	gyro = new ADXRS450_Gyro();
 	}
     	public void auto(double power){
     		
@@ -122,9 +123,7 @@ public class DriveTrain {
         	
         		driverStation.smartDashNum("Gyro Angle", gyro.getAngle());
             	driverStation.smartDashNum("Gyro Rate", gyro.getRate());	
-            	driverStation.smartDashNum("Corrected Gyro Angle:", modGyroAngle);
-            	
-        	}
+            	}
         }
     	private double getDriveModifier(DriverStation driverStation)
         {
@@ -165,7 +164,7 @@ public class DriveTrain {
         public void gyroTurn(double power,double target, double threshold)
         {
         	//turns to face a gyro heading, then gyro follows when within specified number of degrees
-        	
+        	modGyroAngle = gyro.getAngle() % 360;
         	double steering = 0;
         	
         	if (modGyroAngle < (target - 180))
@@ -192,7 +191,7 @@ public class DriveTrain {
         public void gyroFollow(double basePower,double gyroTarget)
         {
         	//proportionally drives in the direction of a gyro heading, turning to face the right direction
-        	
+        	modGyroAngle = gyro.getAngle() % 360;
         	double gyroPower = 0;
         	
         	if (modGyroAngle < (gyroTarget - 180))
@@ -204,7 +203,9 @@ public class DriveTrain {
         	
         	double gyroMotorPowerLeft = basePower - gyroPower;
         	double gyroMotorPowerRight = -basePower - gyroPower;
-        	
+        	//System.out.println("Angle: " + gyro.getAngle());
+        	//System.out.println("Left: " + gyroMotorPowerLeft);
+        	//System.out.println("Right: " + gyroMotorPowerRight);
         	//Makes the motors move
         	driveLeft.set(gyroMotorPowerLeft);
         	driveRight.set(gyroMotorPowerRight);

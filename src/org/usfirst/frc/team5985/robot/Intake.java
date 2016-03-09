@@ -18,8 +18,9 @@ public class Intake {
 	/*
 	 * Constructor: pass in joystick, intake motor, and intake limit switch
 	 */
-	public Intake(int motorIn_PWM_Port, int switchIn_DIO_Port){
-		
+	public Intake(int motorIn_PWM_Port, int switchIn_DIO_Port)
+	{
+		System.out.println("Intake Constructor Called!");	
 		_motor = new VictorSP( motorIn_PWM_Port );
 		
 		_intakeLimitSwitch = new DigitalInput( switchIn_DIO_Port );

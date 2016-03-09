@@ -9,13 +9,15 @@ public class DriverStation {
 	Joystick stick;
 	Joystick xbox;
 	
-	public void driverInit(CameraServer camera1) {
-		
+	public DriverStation(CameraServer camera1)
+	{	
 		stick = new Joystick(0);
         xbox =	 new Joystick(1);
         
     	camera1.setQuality(50);
-    	camera1.startAutomaticCapture("cam0");
+    	camera1.startAutomaticCapture("cam0");		
+	}
+	public void driverInit() {
 		
 	}
 	public void driverPeriodic() {
@@ -29,19 +31,9 @@ public class DriverStation {
     	smartDashNum("Xbox Y Value (Arm)", xbox.getRawAxis(1));
 	}
 	public void smartDashNum(String label, double value){
-		
-		SmartDashboard.putNumber(label, value);
-		
-	}
-
+		SmartDashboard.putNumber(label, value);}
 	public void smartDashBool(String label, boolean value){
-		
-		SmartDashboard.putBoolean(label, value);
-		
-	}
+		SmartDashboard.putBoolean(label, value);}
 public void smartDashString(String label, String value){
-		
-		SmartDashboard.putString(label, value);
-		
-	}
+		SmartDashboard.putString(label, value);}
 }

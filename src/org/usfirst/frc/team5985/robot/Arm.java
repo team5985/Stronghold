@@ -17,10 +17,10 @@ public class Arm {
 	private DigitalInput _limitSwitchDown;
 	//private Encoder _encoder;
 	private final double ARM_SPEED = 0.75;//1;
-	private double _xbox;
 	
 	public Arm(int MotorIn) 
 	{
+		System.out.println("Arm Constructor Called!");
     	//encoder = new Encoder(0, 1);
     	//encoder.setDistancePerPulse(10); //Can be any unit
     	_limitSwitchUp = new DigitalInput(3);
@@ -39,18 +39,18 @@ public class Arm {
     public void handleEvents(DriverStation driverStation)
     {
     	
-    	System.out.println("Xbox: " + _xbox);    	
+    	System.out.println("Xbox: " + driverStation.xbox.getRawAxis(1));    	
     	
-    	if (_xbox > 0.25)// && !_limitSwitchDown.get())
+    	if (driverStation.xbox.getRawAxis(1) > 0.25)// && !_limitSwitchDown.get())
     	{
     		//if trying to move down and limit switch pressed, stop moving
-    		_motor.set(-_xbox * ARM_SPEED);
+    		_motor.set(-driverStation.xbox.getRawAxis(1) * ARM_SPEED);
     	}    	
 
-    	else if (_xbox < -0.25)// && !_limitSwitchUp.get())
+    	else if (driverStation.xbox.getRawAxis(1) < -0.25)// && !_limitSwitchUp.get())
     	{	
     		//if trying to move up and limit switch pressed, stop moving
-    		_motor.set(-_xbox * ARM_SPEED);
+    		_motor.set(-driverStation.xbox.getRawAxis(1) * ARM_SPEED);
     	}
     	else
     	{
