@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Joystick.RumbleType;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 /**
@@ -17,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot {
 
 	//Member Objects
-		Drive robotDrive;
+		DriveTrain robotDrive;
 		Arm _arm;
 		Intake _intake;
 		CameraServer camera1;
@@ -48,7 +47,7 @@ public class Robot extends IterativeRobot {
     	camera1 = CameraServer.getInstance();
     	driverStation.driverInit(camera1);
     	
-    	robotDrive = new Drive(PWM_LEFT_MOTOR_CONTROLLER_PORT,PWM_RIGHT_MOTOR_CONTROLLER_PORT);
+    	robotDrive = new DriveTrain(PWM_LEFT_MOTOR_CONTROLLER_PORT,PWM_RIGHT_MOTOR_CONTROLLER_PORT);
  	
     	//_testEncoder = new PBEncoder(PWM_ARM_MOTOR_CONTROLLER_PORT, 8, 9);
     	
@@ -64,17 +63,15 @@ public class Robot extends IterativeRobot {
     /**
      * This function is run once each time the robot enters autonomous mode
      */
-    public void autonomousInit(Drive drive) {
+    public void autonomousInit(DriveTrain driveTrain) {
 		System.out.println("autonomousInit: STARTED");
-    	
-    	SmartDashboard.putString("test", "Test");
     	
     	autoLoopCounter = 0;
     	
     	//start time for auto period 
     	periodicStartMs = System.currentTimeMillis();
     	
-    	drive.gyro.reset();
+    	driveTrain.gyro.reset();
     	
     	//int gameSelector = (int) SmartDashboard.getNumber("Auto Selector");
     	//System.out.println(gameSelector);
@@ -85,7 +82,7 @@ public class Robot extends IterativeRobot {
     /**
      * This function is called periodically during autonomous
      */
-    public void autonomousPeriodic(Drive drive) {
+    public void autonomousPeriodic(DriveTrain driveTrain) {
     	
     	long currentPeriodtimeSincePeriodStartMs = System.currentTimeMillis() - periodicStartMs;
     	// First second of the auto period
@@ -101,12 +98,12 @@ public class Robot extends IterativeRobot {
     	if (currentPeriodtimeSincePeriodStartMs < 3000 && currentPeriodtimeSincePeriodStartMs > 1000)
     	{
     		_arm.auto(0);
-    		drive.gyroFollow(0.5, 0); 	// drive forwards half speed
+    		driveTrain.gyroFollow(0.5, 0); 	// drive forwards half speed
     	}
     	else 
     	{
     	 	// stop robot
-    		drive.auto(0);
+    		driveTrain.auto(0);
 		}
     }
     
@@ -121,13 +118,13 @@ public class Robot extends IterativeRobot {
     /**
      * This function is called periodically during operator control
      */
-    public void teleopPeriodic(DriverStation driverStation, Drive drive) 
+    public void teleopPeriodic(DriverStation driverStation, DriveTrain driveTrain) 
     {
     	//SmartDashboard.putNumber("Pulse Count:", _testEncoded.getRawCount());
     	//_testEncoder.setSpeed( xbox.getRawAxis(1) / 4 );
     	driverStation.driverPeriodic();
-    	drive.processButtons(driverStation);
-    	drive.teleopDrive(driverStation);
+    	driveTrain.processButtons(driverStation);
+    	driveTrain.teleopDrive(driverStation);
     	_intake.handleEvents(driverStation);
     	_arm.handleEvents(driverStation);
     	if (_intake.hasBoulder())
@@ -146,8 +143,7 @@ public class Robot extends IterativeRobot {
     	System.out.println("teleopPeriodic: Stick x = " + driverStation.stick.getX() + " y = " + driverStation.stick.getY());
     	
 
-    	SmartDashboard.putString("Mode", "Teleop");
-    	SmartDashboard.putBoolean("Boulder Switch Released", _intake.hasBoulder());
+    	driverStation.smartDashBool("Boulder Switch Released", _intake.hasBoulder());
     }
     
     /**

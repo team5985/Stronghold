@@ -22,16 +22,26 @@ public class DriverStation {
 		
 		//Feeds stick + xbox info to Smart Dashboard
 		
-		SmartDashboard.putNumber("Stick X Value (Steering)", stick.getX());
-    	SmartDashboard.putNumber("Stick Y Value (Power)", stick.getY());
-    	SmartDashboard.putBoolean("Stick Button 1 (Intake In)", stick.getRawButton(1));
-    	SmartDashboard.putBoolean("Stick Button 2 (Intake Out)", stick.getRawButton(2));
-    	SmartDashboard.putNumber("Xbox Y Value (Arm)", xbox.getRawAxis(1));
-
-    	
-    	
-    	
-	
+		smartDashNum("Stick X Value (Steering)", stick.getX());
+    	smartDashNum("Stick Y Value (Power)", stick.getY());
+    	smartDashBool("Stick Button 1 (Intake In)", stick.getRawButton(1));
+    	smartDashBool("Stick Button 2 (Intake Out)", stick.getRawButton(2));
+    	smartDashNum("Xbox Y Value (Arm)", xbox.getRawAxis(1));
 	}
-	
+	public void smartDashNum(String label, double value){
+		
+		SmartDashboard.putNumber(label, value);
+		
+	}
+
+	public void smartDashBool(String label, boolean value){
+		
+		SmartDashboard.putBoolean(label, value);
+		
+	}
+public void smartDashString(String label, String value){
+		
+		SmartDashboard.putString(label, value);
+		
+	}
 }

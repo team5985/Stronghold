@@ -2,9 +2,8 @@ package org.usfirst.frc.team5985.robot;
 
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class Drive {
+public class DriveTrain {
 
 	Victor driveLeft;
 	Victor driveRight;
@@ -24,7 +23,7 @@ public class Drive {
 	final double MEDIUM_POWER = 0.4;
 	final double HIGH_POWER = 0.6;
 	
-	public Drive(int leftMotorPort, int rightMotorPort){
+	public DriveTrain(int leftMotorPort, int rightMotorPort){
 		
 		driveLeft = new Victor(leftMotorPort);
     	driveRight = new Victor(rightMotorPort);
@@ -75,9 +74,9 @@ public class Drive {
             	
             	
             	//Displays the left and right motor powers and speed modifier
-            	SmartDashboard.putNumber("SpeedModifier", speedModifier);
-            	SmartDashboard.putNumber("Left Power", leftPower);
-            	SmartDashboard.putNumber("Right Power", rightPower);
+            	driverStation.smartDashNum("SpeedModifier", speedModifier);
+            	driverStation.smartDashNum("Left Power", leftPower);
+            	driverStation.smartDashNum("Right Power", rightPower);
             	//Sends the power variables to the motors
             	driveLeft.set(leftPower);
             	driveRight.set(rightPower);
@@ -120,6 +119,11 @@ public class Drive {
             		turnAngle = -45;
             	}
         		gyroTurn(speedModifier,turnAngle, 45);
+        	
+        		driverStation.smartDashNum("Gyro Angle", gyro.getAngle());
+            	driverStation.smartDashNum("Gyro Rate", gyro.getRate());	
+            	driverStation.smartDashNum("Corrected Gyro Angle:", modGyroAngle);
+            	
         	}
         }
     	private double getDriveModifier(DriverStation driverStation)
@@ -163,7 +167,6 @@ public class Drive {
         	//turns to face a gyro heading, then gyro follows when within specified number of degrees
         	
         	double steering = 0;
-        	double modGyroAngle = gyro.getAngle() % 360;
         	
         	if (modGyroAngle < (target - 180))
     			{target = target - 360;}
@@ -191,7 +194,6 @@ public class Drive {
         	//proportionally drives in the direction of a gyro heading, turning to face the right direction
         	
         	double gyroPower = 0;
-        	double modGyroAngle = gyro.getAngle() % 360;
         	
         	if (modGyroAngle < (gyroTarget - 180))
     			{gyroTarget = gyroTarget - 360;}
@@ -207,11 +209,6 @@ public class Drive {
         	driveLeft.set(gyroMotorPowerLeft);
         	driveRight.set(gyroMotorPowerRight);
 
-        	SmartDashboard.putNumber("Gyro Angle", gyro.getAngle());
-        	SmartDashboard.putNumber("Gyro Rate", gyro.getRate());	
-        	SmartDashboard.putNumber("Corrected Gyro Angle:", modGyroAngle);
-        	
-        
         }
         public void processButtons(DriverStation driverStation)
         {
@@ -220,7 +217,6 @@ public class Drive {
         	else if (driverStation.stick.getRawButton(10)) driveType = DRIVE_HIGH;
         	else if (driverStation.stick.getRawButton(3)) driveType = DRIVE_BRAKE;
         	else if (driverStation.stick.getRawButton(9)) driveType = DRIVE_FREE;
-        	
         	if (driverStation.stick.getRawButton(7))
         	{
         		System.out.println("Gyro RESET");
