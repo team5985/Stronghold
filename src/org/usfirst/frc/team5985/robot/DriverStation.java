@@ -26,6 +26,7 @@ public class DriverStation {
 		
 		smartDashNum("Stick X Value (Steering)", stick.getX());
     	smartDashNum("Stick Y Value (Power)", stick.getY());
+    	smartDashNum("Stick Slider (Raw SpeedModifier)", stick.getThrottle());
     	smartDashBool("Stick Button 1 (Intake In)", stick.getRawButton(1));
     	smartDashBool("Stick Button 2 (Intake Out)", stick.getRawButton(2));
     	smartDashNum("Xbox Y Value (Arm)", xbox.getRawAxis(1));

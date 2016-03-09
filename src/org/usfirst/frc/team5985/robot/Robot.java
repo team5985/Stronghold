@@ -70,7 +70,7 @@ public class Robot extends IterativeRobot
     	//start time for auto period 
     	periodicStartMs = System.currentTimeMillis();
     	
-    	robotDrive.gyro.reset();
+    	robotDrive.gyro.calibrate();
     	
     	_arm.init();
     }
@@ -151,7 +151,9 @@ public class Robot extends IterativeRobot
     
     public void disabledInit() 
     {
-    	//xbox.setRumble(RumbleType.kLeftRumble, 0);
+    	driverStation.xbox.setRumble(RumbleType.kLeftRumble, 0);
+    	driverStation.xbox.setRumble(RumbleType.kRightRumble, 0);
+    	
     }
 
 }

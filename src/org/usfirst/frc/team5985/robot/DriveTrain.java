@@ -47,6 +47,9 @@ public class DriveTrain {
         	double POV = driverStation.stick.getPOV(0);
         	double turnAngle = 0;
         	
+        	driverStation.smartDashNum("Gyro Angle", gyro.getAngle());
+        	driverStation.smartDashNum("Gyro Rate", gyro.getRate());	
+        	
         	if (POV == -1) 
         	{
         		//Drives normally
@@ -121,9 +124,7 @@ public class DriveTrain {
             	}
         		gyroTurn(speedModifier,turnAngle, 45);
         	
-        		driverStation.smartDashNum("Gyro Angle", gyro.getAngle());
-            	driverStation.smartDashNum("Gyro Rate", gyro.getRate());	
-            	}
+        		}
         }
     	private double getDriveModifier(DriverStation driverStation)
         {
@@ -165,21 +166,22 @@ public class DriveTrain {
         {
         	//turns to face a gyro heading, then gyro follows when within specified number of degrees
         	modGyroAngle = gyro.getAngle() % 360;
-        	double steering = 0;
+        	double steering = 0.5;
+        	double powerGain = 0.25;
         	
         	if (modGyroAngle < (target - 180))
     			{target = target - 360;}
-        	
+        	else if (modGyroAngle > (target + 180))
+			{target = target + 360;}
+    	
         	//Calculates how much to turn based on the current heading and the target heading
         	if (modGyroAngle < (target - threshold)){
-        		steering = 1;
-        		driveLeft.set(-power + steering);
-            	driveRight.set(power + steering);
+        		driveLeft.set((-power*powerGain) + steering);
+            	driveRight.set((power*powerGain) + steering);
         	}
         	else if (modGyroAngle > (target + threshold)){
-        		steering = -1;
-        		driveLeft.set(-power + steering);
-            	driveRight.set(power + steering);
+        		driveLeft.set((-power*powerGain) + -steering);
+            	driveRight.set((power*powerGain) + -steering);
         	}
         	
         	else {
@@ -196,7 +198,9 @@ public class DriveTrain {
         	
         	if (modGyroAngle < (gyroTarget - 180))
     			{gyroTarget = gyroTarget - 360;}
-        	
+        	else if (modGyroAngle > (gyroTarget + 180))
+			{gyroTarget = gyroTarget + 360;}
+    	
         	//Calculates how much to turn based on the current heading and the target heading
         	gyroPower = modGyroAngle - gyroTarget;
         	gyroPower = gyroPower * GYRO_GAIN;
@@ -221,7 +225,7 @@ public class DriveTrain {
         	if (driverStation.stick.getRawButton(7))
         	{
         		System.out.println("Gyro RESET");
-        		gyro.reset();
+        		gyro.calibrate();
         	}
         }
         
