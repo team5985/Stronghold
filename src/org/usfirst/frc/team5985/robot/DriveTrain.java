@@ -176,16 +176,16 @@ public class DriveTrain {
     	
         	//Calculates how much to turn based on the current heading and the target heading
         	if (modGyroAngle < (target - threshold)){
-        		driveLeft.set((-power*powerGain) + steering);
-            	driveRight.set((power*powerGain) + steering);
+        		driveLeft.set((-power*powerGain) + steering); //-power);
+            	driveRight.set((power*powerGain) + steering); //power);
         	}
         	else if (modGyroAngle > (target + threshold)){
-        		driveLeft.set((-power*powerGain) + -steering);
-            	driveRight.set((power*powerGain) + -steering);
+        		driveLeft.set((-power*powerGain) + -steering); //power);
+            	driveRight.set((power*powerGain) + -steering); //-power);
         	}
         	
         	else {
-        		gyroFollow(power, target);
+        		gyroFollow(power*0.5, target);
         	}
         	
         
