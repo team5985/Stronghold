@@ -123,16 +123,6 @@ public class Robot extends IterativeRobot
     	robotDrive.teleopDrive(driverStation);
     	_intake.handleEvents(driverStation);
     	_arm.handleEvents(driverStation);
-    	if (_intake.hasBoulder())
-    	{
-    		driverStation.xbox.setRumble(RumbleType.kLeftRumble, 1);
-    		driverStation.xbox.setRumble(RumbleType.kRightRumble, 1);
-    	}
-    	else 
-    	{
-    		driverStation.xbox.setRumble(RumbleType.kLeftRumble, 0);
-    		driverStation.xbox.setRumble(RumbleType.kRightRumble, 0);
-    	}
     	
     	//System.out.println("Arm encoder distance: " + armEncoder.getDistance());
     	//System.out.println("Intake encoder distance: " + armEncoder.getDistance());

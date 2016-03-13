@@ -3,6 +3,7 @@ package org.usfirst.frc.team5985.robot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.Joystick.RumbleType;
 
 /*
  * Controls arm motor with an xBox controller.
@@ -13,18 +14,17 @@ import edu.wpi.first.wpilibj.VictorSP;
 public class Arm {
 	
 	private VictorSP _motor;
-	private DigitalInput _limitSwitchUp;
-	private DigitalInput _limitSwitchDown;
+	private DigitalInput _limitSwitch;
 	//private Encoder _encoder;
 	private final double ARM_SPEED = 0.75;//1;
+	private double preset = -1;
 	
 	public Arm(int MotorIn) 
 	{
 		System.out.println("Arm Constructor Called!");
     	//encoder = new Encoder(0, 1);
     	//encoder.setDistancePerPulse(10); //Can be any unit
-    	_limitSwitchUp = new DigitalInput(3);
-    	_limitSwitchDown = new DigitalInput(2);
+    	_limitSwitch = new DigitalInput(3);
     	_motor = new VictorSP(MotorIn);
 	}
 	
@@ -38,24 +38,118 @@ public class Arm {
 	}
     public void handleEvents(DriverStation driverStation)
     {
-    	
     	System.out.println("Xbox: " + driverStation.xbox.getRawAxis(1));    	
     	
-    	if (driverStation.xbox.getRawAxis(1) > 0.25)// && !_limitSwitchDown.get())
+    	double power = 0;
+    	
+    	if (driverStation.xbox.getRawButton(1))
     	{
-    		//if trying to move down and limit switch pressed, stop moving
-    		_motor.set(-driverStation.xbox.getRawAxis(1) * ARM_SPEED);
-    	}    	
-
-    	else if (driverStation.xbox.getRawAxis(1) < -0.25)// && !_limitSwitchUp.get())
-    	{	
-    		//if trying to move up and limit switch pressed, stop moving
-    		_motor.set(-driverStation.xbox.getRawAxis(1) * ARM_SPEED);
+    		preset = 1;
+    	}
+    	else if (driverStation.xbox.getRawButton(2))
+    	{
+    		preset = 2;
+    	}
+    	else if (driverStation.xbox.getRawButton(3))
+    	{
+    		preset = 3;
+    	}
+    	else if (driverStation.xbox.getRawButton(4))
+    	{
+    		preset = 4;
+    	}
+    	
+    	if (driverStation.xbox.getRawAxis(1) > 0.25 || driverStation.xbox.getRawAxis(1) < -0.25 || preset > 0)
+    	{
+    		if (driverStation.xbox.getRawAxis(1) > 0.25)
+        	{
+        		//down
+        		power = -driverStation.xbox.getRawAxis(1);
+        		preset = -1;
+        	}    	
+       		else if (driverStation.xbox.getRawAxis(1) < -0.25)
+       		{	
+       			//up
+       			power = -driverStation.xbox.getRawAxis(1);
+       			preset = -1;
+       			}
+       		else if (preset == 4)
+       		{
+       			//up
+       			power = 1;
+       			preset = 4;	
+       		}
+       		else if (preset == 1)
+       		{
+       			/*if (encoder = near ground)
+       			{
+       				power = 0;
+       			}
+       			else if (encoder lower than near ground)
+       			{
+       				power = 1
+       			}
+       			else if (encoder higher than near ground)
+       			{
+       				power = -1
+       			}
+       			*/
+       			preset = 1;	
+       		}
+       		else if (preset == 3)
+       		{
+       			/*if (encoder = drawbridge)
+       			{
+       				power = 0;
+       			}
+       			else if (encoder lower than drawbridge)
+       			{
+       				power = 1
+       			}
+       			else if (encoder higher than drawbridge)
+       			{
+       				power = -1
+       			}
+       			*/
+       			preset = 3;	
+       		}
+       		else if (preset == 2)
+       		{
+       			/*if (encoder = low bar)
+       			{
+       				power = 0;
+       			}
+       			else if (encoder lower than low bar)
+       			{
+       				power = 1
+       			}
+       			else if (encoder higher than low bar)
+       			{
+       				power = -1
+       			}
+       			*/
+       			preset = 2;	
+       		}
+    		if (!_limitSwitch.get() && power > 0)
+    		{
+    			power = 0;
+    		}
+    		_motor.set(power * ARM_SPEED);
     	}
     	else
     	{
-    		//Do nothing
     		_motor.set(0);
     	}
+    	if (!_limitSwitch.get())
+		{
+    		driverStation.xbox.setRumble(RumbleType.kLeftRumble, 1);
+    		driverStation.xbox.setRumble(RumbleType.kRightRumble, 1);
+		}
+		else
+		{
+			driverStation.xbox.setRumble(RumbleType.kLeftRumble, 0);
+    		driverStation.xbox.setRumble(RumbleType.kRightRumble, 0);
+		}
+		
     }
 }

@@ -23,6 +23,8 @@ public class DriveTrain {
 	final double MEDIUM_POWER = 0.4;
 	final double HIGH_POWER = 0.6;
 	
+	boolean gyroReset = false;
+	
 	public DriveTrain(int leftMotorPort, int rightMotorPort){
 		
 		driveLeft = new Victor(leftMotorPort);
@@ -57,6 +59,7 @@ public class DriveTrain {
         		//Gets stick values and sets variables for it
             	double steering = driverStation.stick.getX();
             	double power = driverStation.stick.getY();
+            	double steeringBoost = 0;
             	
             	//corrects for the stick not being 100% zeroed
             	if (steering < 0.1 && steering > -0.1)
@@ -68,8 +71,12 @@ public class DriveTrain {
             		power = 0;
             	}
             	
+            	steeringBoost = speedModifier + 0.2;
+            	if (steeringBoost > 0.4){
+            		steeringBoost = 0.4;}
+            	
             	//multiplies by speedModifier
-            	steering = steering * speedModifier;
+            	steering = steering * (speedModifier + steeringBoost);
             	power = power * speedModifier;
             	
             	//Applies above variables to variables that will be applied to the motors
@@ -77,7 +84,7 @@ public class DriveTrain {
             	double rightPower = power + steering;
             	
             	
-            	//Displays the left and right motor powers and speed modifier
+            	//Displays the smartDashboard
             	driverStation.smartDashNum("SpeedModifier", speedModifier);
             	driverStation.smartDashNum("Left Power", leftPower);
             	driverStation.smartDashNum("Right Power", rightPower);
@@ -122,7 +129,7 @@ public class DriveTrain {
             	{
             		turnAngle = -45;
             	}
-        		gyroTurn(speedModifier,turnAngle, 45);
+        		gyroTurn(speedModifier,turnAngle, 2);
         	
         		}
         }
@@ -165,9 +172,9 @@ public class DriveTrain {
         public void gyroTurn(double power,double target, double threshold)
         {
         	//turns to face a gyro heading, then gyro follows when within specified number of degrees
+        	double steerBoost = 0.2;
+        	
         	modGyroAngle = gyro.getAngle() % 360;
-        	double steering = 0.5;
-        	double powerGain = 0.25;
         	
         	if (modGyroAngle < (target - 180))
     			{target = target - 360;}
@@ -176,16 +183,17 @@ public class DriveTrain {
     	
         	//Calculates how much to turn based on the current heading and the target heading
         	if (modGyroAngle < (target - threshold)){
-        		driveLeft.set((-power*powerGain) + steering); //-power);
-            	driveRight.set((power*powerGain) + steering); //power);
+        		driveLeft.set(power + steerBoost);
+            	driveRight.set(power + steerBoost);
         	}
         	else if (modGyroAngle > (target + threshold)){
-        		driveLeft.set((-power*powerGain) + -steering); //power);
-            	driveRight.set((power*powerGain) + -steering); //-power);
+        		driveLeft.set(-power - steerBoost);
+            	driveRight.set(-power - steerBoost);
         	}
         	
         	else {
-        		gyroFollow(power*0.5, target);
+        		driveLeft.set(power);
+        		driveRight.set(-power);
         	}
         	
         
@@ -205,7 +213,7 @@ public class DriveTrain {
         	gyroPower = modGyroAngle - gyroTarget;
         	gyroPower = gyroPower * GYRO_GAIN;
         	
-        	double gyroMotorPowerLeft = basePower - gyroPower;
+        	double gyroMotorPowerLeft = basePower - gyroPower; 
         	double gyroMotorPowerRight = -basePower - gyroPower;
         	//System.out.println("Angle: " + gyro.getAngle());
         	//System.out.println("Left: " + gyroMotorPowerLeft);
@@ -225,7 +233,11 @@ public class DriveTrain {
         	if (driverStation.stick.getRawButton(7))
         	{
         		System.out.println("Gyro RESET");
+        		gyroReset = true;
+        		driverStation.smartDashBool("Gyro Resetting", gyroReset);
         		gyro.calibrate();
+        		gyroReset = false;
+        		driverStation.smartDashBool("Gyro Resetting", gyroReset);
         	}
         }
         
