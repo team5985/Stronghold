@@ -1,7 +1,6 @@
 package org.usfirst.frc.team5985.robot;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.VictorSP;
 
 /*
@@ -19,8 +18,9 @@ public class Intake {
 	/*
 	 * Constructor: pass in joystick, intake motor, and intake limit switch
 	 */
-	public Intake(int motorIn_PWM_Port, int switchIn_DIO_Port){
-		
+	public Intake(int motorIn_PWM_Port, int switchIn_DIO_Port)
+	{
+		System.out.println("Intake Constructor Called!");	
 		_motor = new VictorSP( motorIn_PWM_Port );
 		
 		_intakeLimitSwitch = new DigitalInput( switchIn_DIO_Port );
@@ -34,14 +34,14 @@ public class Intake {
      * Button 1 sucks in the ball, unless it has the ball already.
      * button 2 shoots the ball.
      */
-	public void periodic(Joystick _stick)
+	public void handleEvents(DriverStation driverStation)
 	{ 	
-		if (_stick.getRawButton(1) && !_intakeLimitSwitch.get())
+		if (driverStation.stick.getRawButton(1) && !_intakeLimitSwitch.get())
 		{
 			//button 1 and boulder not completely in: suck in boulder	
-			_motor.set(-0.4);
+			_motor.set(-0.6);
 		}
-		else if (_stick.getRawButton(2))
+		else if (driverStation.stick.getRawButton(2))
 		{
 			//button 2: shoot out boulder
 			_motor.set(1);
