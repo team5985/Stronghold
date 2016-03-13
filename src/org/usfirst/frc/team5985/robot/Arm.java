@@ -77,7 +77,11 @@ public class Arm {
        		{
        			//up
        			power = 1;
-       			preset = 4;	
+       			preset = 4;
+       			if (!_limitSwitch.get())
+       			{
+       				preset = -1;
+       			}
        		}
        		else if (preset == 1)
        		{
@@ -140,7 +144,7 @@ public class Arm {
     	{
     		_motor.set(0);
     	}
-    	if (!_limitSwitch.get())
+    	/*if (!_limitSwitch.get())
 		{
     		driverStation.xbox.setRumble(RumbleType.kLeftRumble, 1);
     		driverStation.xbox.setRumble(RumbleType.kRightRumble, 1);
@@ -149,7 +153,7 @@ public class Arm {
 		{
 			driverStation.xbox.setRumble(RumbleType.kLeftRumble, 0);
     		driverStation.xbox.setRumble(RumbleType.kRightRumble, 0);
-		}
+		}*/
     }
     public boolean armUp()
 	{

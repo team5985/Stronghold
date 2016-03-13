@@ -71,7 +71,7 @@ public class DriveTrain {
             		power = 0;
             	}
             	
-            	steeringBoost = speedModifier + 0.2;
+            	steeringBoost = speedModifier + 0.1;
             	if (steeringBoost > 0.4){
             		steeringBoost = 0.4;}
             	
@@ -129,7 +129,7 @@ public class DriveTrain {
             	{
             		turnAngle = -45;
             	}
-        		gyroTurn(speedModifier,turnAngle, 2);
+        		gyroTurn(speedModifier,turnAngle,45);
         	
         		}
         }
@@ -172,7 +172,12 @@ public class DriveTrain {
         public void gyroTurn(double power,double target, double threshold)
         {
         	//turns to face a gyro heading, then gyro follows when within specified number of degrees
-        	double steerBoost = 0.2;
+        	double steerBoost = 0.1;
+        	
+        	steerBoost = 0.1;
+        	if (power + steerBoost > 0.4){
+        		steerBoost = 0;}
+        	
         	
         	modGyroAngle = gyro.getAngle() % 360;
         	
@@ -191,9 +196,23 @@ public class DriveTrain {
             	driveRight.set(-power - steerBoost);
         	}
         	
-        	else {
+        	else
+        	{
+        		if (modGyroAngle < target - (threshold/2))
+        		{
+        			driveLeft.set((power + steerBoost)/2);
+                	driveRight.set((power + steerBoost)/2);
+        		}
+        		else if (modGyroAngle > target + (threshold/2))
+        		{
+        			driveLeft.set((-power - steerBoost)/2);
+                	driveRight.set((-power - steerBoost)/2);
+        		}
+        		else
+        		{
         		driveLeft.set(power);
         		driveRight.set(-power);
+        		}
         	}
         	
         

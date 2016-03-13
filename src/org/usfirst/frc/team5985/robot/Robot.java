@@ -84,24 +84,24 @@ public class Robot extends IterativeRobot
     	if (currentPeriodtimeSincePeriodStartMs < 10000)
     	{
     		//Move arm and wait until reset gyro is complete  
-    		if (!_arm.armUp())
+    		/*if (!_arm.armUp())
     		{
     			_arm.auto(1);
     		}
     		else
     		{
     			_arm.auto(0);
-    		}
+    		}*/
         	
         robotDrive.gyro.reset();
-        gyroResetFinished = System.currentTimeMillis();
+        //gyroResetFinished = System.currentTimeMillis();
     			
     		//_arm.auto(-0.7);	//test arm movement
     	}
-    	long driveTime = System.currentTimeMillis() - gyroResetFinished;
+    	//long driveTime = System.currentTimeMillis() - gyroResetFinished;
     	
     	// drive forward for 3 seconds (if < 3 seconds)
-    	if (driveTime < 3000)
+    	if (currentPeriodtimeSincePeriodStartMs < 4000 && currentPeriodtimeSincePeriodStartMs > 1000)
     	{
     		_arm.auto(0);
     		robotDrive.gyroFollow(0.5, 0); 	// drive forwards half speed
@@ -140,6 +140,7 @@ public class Robot extends IterativeRobot
     	
 
     	driverStation.smartDashBool("Boulder Switch Released", _intake.hasBoulder());
+    	driverStation.smartDashBool("Arm Switch Pressed", !_arm.armUp());
     }
     
     /**
