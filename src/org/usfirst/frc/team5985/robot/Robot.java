@@ -38,7 +38,7 @@ public class Robot extends IterativeRobot
 	//Internal member variables
 	int autoLoopCounter; //How long in auto?
 	long periodicStartMs; 
-	
+	long gyroResetFinished;
 	
     /**
      * This function is run when the robot is first started up and should be
@@ -70,9 +70,8 @@ public class Robot extends IterativeRobot
     	//start time for auto period 
     	periodicStartMs = System.currentTimeMillis();
     	
-    	robotDrive.gyro.reset();
-    	
     	_arm.init();
+    		
     }
 
     /**
@@ -82,16 +81,27 @@ public class Robot extends IterativeRobot
     	
     	long currentPeriodtimeSincePeriodStartMs = System.currentTimeMillis() - periodicStartMs;
     	// First second of the auto period
-    	if (currentPeriodtimeSincePeriodStartMs < 1000)
+    	if (currentPeriodtimeSincePeriodStartMs < 10000)
     	{
     		//Move arm and wait until reset gyro is complete  
+    		if (!_arm.armUp())
+    		{
+    			_arm.auto(1);
+    		}
+    		else
+    		{
+    			_arm.auto(0);
+    		}
+        	
+        robotDrive.gyro.reset();
+        gyroResetFinished = System.currentTimeMillis();
+    			
     		//_arm.auto(-0.7);	//test arm movement
     	}
+    	long driveTime = System.currentTimeMillis() - gyroResetFinished;
     	
-    	
-    	
-    	// drive forward for 2 seconds (from 1-3 seconds)
-    	if (currentPeriodtimeSincePeriodStartMs < 4000 && currentPeriodtimeSincePeriodStartMs > 1000)
+    	// drive forward for 3 seconds (if < 3 seconds)
+    	if (driveTime < 3000)
     	{
     		_arm.auto(0);
     		robotDrive.gyroFollow(0.5, 0); 	// drive forwards half speed

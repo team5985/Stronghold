@@ -150,6 +150,9 @@ public class Arm {
 			driverStation.xbox.setRumble(RumbleType.kLeftRumble, 0);
     		driverStation.xbox.setRumble(RumbleType.kRightRumble, 0);
 		}
-		
     }
+    public boolean armUp()
+	{
+		return _limitSwitch.get();
+	}
 }
