@@ -3,7 +3,6 @@ package org.usfirst.frc.team5985.robot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.Joystick.RumbleType;
 
 /*
  * Controls arm motor with an xBox controller.
@@ -16,21 +15,22 @@ public class Arm {
 	private VictorSP _motor;
 	private DigitalInput _limitSwitch;
 	//private Encoder _encoder;
+	//private int setpointPulses; // Encoder pulses robot aims towards
 	private final double ARM_SPEED = 0.75;//1;
 	private double preset = -1;
 	
 	public Arm(int MotorIn) 
 	{
 		System.out.println("Arm Constructor Called!");
-    	//encoder = new Encoder(0, 1);
-    	//encoder.setDistancePerPulse(10); //Can be any unit
+    	//_encoder = new Encoder(0, 1);
+    	//_encoder.setDistancePerPulse(10); //Can be any unit
     	_limitSwitch = new DigitalInput(3);
     	_motor = new VictorSP(MotorIn);
 	}
 	
 	public void init()
 	{
-		//encoder.reset();
+		//_encoder.reset();
 	}
 	public void auto(double input)
 	{
@@ -39,6 +39,11 @@ public class Arm {
     public void handleEvents(DriverStation driverStation)
     {
     	System.out.println("Xbox: " + driverStation.xbox.getRawAxis(1));    	
+    	
+    //	driverStation.smartDashNum("Encoder Distance",_encoder.getDistance());
+    //	driverStation.smartDashNum("Encoder Raw Count",_encoder.getRaw());
+    //	driverStation.smartDashNum("Encoder Count",_encoder.get());
+    //	driverStation.smartDashNum("Encoder Count Difference",_encoder.get() - _encoder.getRaw());
     	
     	double power = 0;
     	
@@ -78,13 +83,14 @@ public class Arm {
        			//up
        			power = 1;
        			preset = 4;
-       			if (!_limitSwitch.get())
+       			if (_limitSwitch.get())
        			{
        				preset = -1;
        			}
        		}
        		else if (preset == 1)
        		{
+       			//armTarget(4000);
        			/*if (encoder = near ground)
        			{
        				power = 0;
@@ -102,6 +108,7 @@ public class Arm {
        		}
        		else if (preset == 3)
        		{
+       			//armTarget(3000);
        			/*if (encoder = drawbridge)
        			{
        				power = 0;
@@ -119,6 +126,8 @@ public class Arm {
        		}
        		else if (preset == 2)
        		{
+
+       			//armTarget(2000);
        			/*if (encoder = low bar)
        			{
        				power = 0;
@@ -155,8 +164,26 @@ public class Arm {
     		driverStation.xbox.setRumble(RumbleType.kRightRumble, 0);
 		}*/
     }
+    // Returns true if arm is all the way up
     public boolean armUp()
 	{
 		return _limitSwitch.get();
 	}
+    
+    
+    /*public void armTarget(int targetPulse) 
+    {
+    	int currentPulses = _encoder.getRaw();
+    	if ((targetPulse - currentPulses) > 100)
+    	{
+    		_motor.set(0.5);
+    	}
+    	else if ((targetPulse - currentPulses) < -100)
+    	{
+    		if (!_limitSwitch.get())
+   			{
+    			_motor.set(-0.5);
+   			}
+    	}
+    }*/
 }

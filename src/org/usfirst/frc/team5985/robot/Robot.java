@@ -39,6 +39,7 @@ public class Robot extends IterativeRobot
 	int autoLoopCounter; //How long in auto?
 	long periodicStartMs; 
 	long gyroResetFinished;
+	double autoNumber;
 	
     /**
      * This function is run when the robot is first started up and should be
@@ -57,6 +58,7 @@ public class Robot extends IterativeRobot
     	
     	_intake = new Intake(PWM_INTAKE_MOTOR_CONTROLLER_PORT, DIO_INTAKE_SWITCH_PORT); 	
     	_arm = new Arm(PWM_ARM_MOTOR_CONTROLLER_PORT);
+    	driverStation.smartDashNum("Autonomous Program Selector",1);
     }
     
     /**
@@ -71,7 +73,8 @@ public class Robot extends IterativeRobot
     	periodicStartMs = System.currentTimeMillis();
     	
     	_arm.init();
-    		
+    	autoNumber = SmartDashboard.getNumber("Autonomous Program Selector");
+    //	System.out.println("auto number: " + autoNumber);
     }
 
     /**
@@ -80,37 +83,66 @@ public class Robot extends IterativeRobot
     public void autonomousPeriodic() {
     	
     	long currentPeriodtimeSincePeriodStartMs = System.currentTimeMillis() - periodicStartMs;
+    	
     	// First second of the auto period
     	if (currentPeriodtimeSincePeriodStartMs < 10000)
     	{
     		//Move arm and wait until reset gyro is complete  
-    		/*if (!_arm.armUp())
+    		/*if (_arm.armUp())
     		{
     			_arm.auto(1);
     		}
     		else
     		{
     			_arm.auto(0);
-    		}*/
+    		}
+    		_arm.init();
+    		*/
         	
-        robotDrive.gyro.reset();
-        //gyroResetFinished = System.currentTimeMillis();
+    		robotDrive.gyro.reset();//calibrate();
+    		//gyroResetFinished = System.currentTimeMillis();
     			
     		//_arm.auto(-0.7);	//test arm movement
     	}
     	//long driveTime = System.currentTimeMillis() - gyroResetFinished;
     	
-    	// drive forward for 3 seconds (if < 3 seconds)
-    	if (currentPeriodtimeSincePeriodStartMs < 4000 && currentPeriodtimeSincePeriodStartMs > 1000)
+    	if (autoNumber == 1)
     	{
-    		_arm.auto(0);
-    		robotDrive.gyroFollow(0.5, 0); 	// drive forwards half speed
+    		System.out.println("Auto Program = 1: No Arm Low Power Drive");
+    		// drive forward for 3 seconds (if < 3 seconds)
+        	if (currentPeriodtimeSincePeriodStartMs < 4000 && currentPeriodtimeSincePeriodStartMs > 1000)
+        	{
+        		_arm.auto(0);
+        		robotDrive.gyroFollow(0.5, 0); 	// drive forwards half speed
+        	}
+        	else 
+        	{
+        	 	// stop robot
+        		robotDrive.auto(0);
+    		}
+        
     	}
-    	else 
+    	else if (autoNumber == 0)
     	{
-    	 	// stop robot
-    		robotDrive.auto(0);
-		}
+    		System.out.println("Auto Program = 0: No Arm Low Power Drive Reverse");
+    		// drive forward for 3 seconds (if < 3 seconds)
+        	if (currentPeriodtimeSincePeriodStartMs < 4000 && currentPeriodtimeSincePeriodStartMs > 1000)
+        	{
+        		_arm.auto(0);
+        		robotDrive.auto(-0.5); 	// drive backwards half speed
+        	}
+        	else 
+        	{
+        	 	// stop robot
+        		robotDrive.auto(0);
+    		}
+        
+    	}
+    	else
+    	{
+    		
+    	}
+    
     }
     
     /**

@@ -35,6 +35,9 @@ public class DriverStation {
 		SmartDashboard.putNumber(label, value);}
 	public void smartDashBool(String label, boolean value){
 		SmartDashboard.putBoolean(label, value);}
-public void smartDashString(String label, String value){
+	public void smartDashString(String label, String value){
 		SmartDashboard.putString(label, value);}
+	public void smartDashGetNum(String label, double defaultValue){
+		SmartDashboard.getNumber(label, defaultValue);}
+
 }
