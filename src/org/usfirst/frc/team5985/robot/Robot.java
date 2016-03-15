@@ -23,7 +23,16 @@ public class Robot extends IterativeRobot
 	CameraServer camera1;
 	//Encoder armEncoder;
 	//PBEncoder _testEncoder;
-		
+	//Constants for Autonomous
+	/* Autonomous Constants 
+	 * AUTO_[Defence Type]_[Speed]_[arm]
+	 */
+	final int AUTO_DEFAULT = -1;			//No Setting/Error				
+	final int AUTO_NONE = 0; 				//No Auto
+	final int AUTO_SHORT = 1;				//Short Travel only
+	final int AUTO_LOW_SLOW_NO_ARM = 2;		//Rough Terrain, Ramparts
+	final int AUTO_LOW_SLOW_ARM = 3;		//Low Bar
+	final int AUTO_LOW_FAST_NO_ARM = 4;		//Rock Wall, Moat?
 		
 	// Constants for Robot Ports
 	// PWM
@@ -40,6 +49,7 @@ public class Robot extends IterativeRobot
 	long periodicStartMs; 
 	long gyroResetFinished;
 	double autoNumber;
+	double gyroHeading;
 	
     /**
      * This function is run when the robot is first started up and should be
@@ -58,7 +68,9 @@ public class Robot extends IterativeRobot
     	
     	_intake = new Intake(PWM_INTAKE_MOTOR_CONTROLLER_PORT, DIO_INTAKE_SWITCH_PORT); 	
     	_arm = new Arm(PWM_ARM_MOTOR_CONTROLLER_PORT);
-    	driverStation.smartDashNum("Autonomous Program Selector",1);
+    	driverStation.smartDashNum("Autonomous Program Selector",-1);
+    	robotDrive.gyro.calibrate();
+    	
     }
     
     /**
@@ -83,6 +95,32 @@ public class Robot extends IterativeRobot
     public void autonomousPeriodic() {
     	
     	long currentPeriodtimeSincePeriodStartMs = System.currentTimeMillis() - periodicStartMs;
+
+    	switch((int)autoNumber)
+    	{
+    	case(AUTO_NONE):
+    		
+    		break;
+    	case(AUTO_SHORT):
+    		
+    		break;
+    	case(AUTO_LOW_SLOW_NO_ARM):
+    		
+    		break;
+    	case(AUTO_LOW_SLOW_ARM):
+    		
+    		break;
+    	case(AUTO_LOW_FAST_NO_ARM):
+    		
+    		break;
+    	case(AUTO_DEFAULT):
+    			System.out.println("autonomousPeriodic: Auto Mode not set");
+    			break;
+    	default:
+    		System.out.println("autonomousPeriodic: Unknown Value");
+			break;
+    	}
+  	
     	
     	// First second of the auto period
     	if (currentPeriodtimeSincePeriodStartMs < 10000)
@@ -98,14 +136,10 @@ public class Robot extends IterativeRobot
     		}
     		_arm.init();
     		*/
+    		gyroHeading = robotDrive.gyro.getAngle();
         	
-    		robotDrive.gyro.reset();//calibrate();
-    		//gyroResetFinished = System.currentTimeMillis();
-    			
-    		//_arm.auto(-0.7);	//test arm movement
     	}
-    	//long driveTime = System.currentTimeMillis() - gyroResetFinished;
-    	
+
     	if (autoNumber == 1)
     	{
     		System.out.println("Auto Program = 1: No Arm Low Power Drive");
@@ -113,7 +147,7 @@ public class Robot extends IterativeRobot
         	if (currentPeriodtimeSincePeriodStartMs < 4000 && currentPeriodtimeSincePeriodStartMs > 1000)
         	{
         		_arm.auto(0);
-        		robotDrive.gyroFollow(0.5, 0); 	// drive forwards half speed
+        		robotDrive.gyroFollow(0.5, gyroHeading); 	// drive forwards half speed
         	}
         	else 
         	{
@@ -137,6 +171,17 @@ public class Robot extends IterativeRobot
         		robotDrive.auto(0);
     		}
         
+    	}
+    	else if (autoNumber == 50)
+    	{
+    		if (currentPeriodtimeSincePeriodStartMs < 1000)
+    			{
+    			 _arm.auto(-0.73);
+    			}
+    		else
+    		{
+    			_arm.auto(0);
+    		}
     	}
     	else
     	{
@@ -187,6 +232,27 @@ public class Robot extends IterativeRobot
     	driverStation.xbox.setRumble(RumbleType.kLeftRumble, 0);
     	driverStation.xbox.setRumble(RumbleType.kRightRumble, 0);
     	
+    }
+    
+    private void autoDrive(long timeElapsedMs, double minTime, double maxTime, double speed, int gyroTarget, boolean useArm, double armSpeed)
+    {
+		if (timeElapsedMs < minTime && useArm)
+    	{
+    		// Move Arm
+			_arm.auto(armSpeed);
+    	}
+    	
+		if (timeElapsedMs < maxTime && timeElapsedMs > minTime)
+    	{
+    		// stop arm, Gyro follow towards gyro target
+			_arm.auto(0);
+    		robotDrive.gyroFollow(speed, gyroTarget); 	// drive forwards half speed
+    	}
+    	else 
+    	{
+    	 	// stop robot
+    		robotDrive.auto(0);
+		}
     }
 
 }

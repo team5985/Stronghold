@@ -83,8 +83,9 @@ public class Arm {
        			//up
        			power = 1;
        			preset = 4;
-       			if (_limitSwitch.get())
+       			if (!_limitSwitch.get())
        			{
+       				power = 0;
        				preset = -1;
        			}
        		}
