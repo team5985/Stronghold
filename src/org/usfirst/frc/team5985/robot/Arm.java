@@ -14,38 +14,40 @@ public class Arm {
 	
 	private VictorSP _motor;
 	private DigitalInput _limitSwitch;
-	//private Encoder _encoder;
-	//private int setpointPulses; // Encoder pulses robot aims towards
+	private Encoder _encoder;
+	private int setpointPulses; // Encoder pulses robot aims towards
 	private final double ARM_SPEED = 0.75;//1;
 	private double preset = -1;
+	private double power = 0;
+	private final double ARM_LOW = -0.25;
+	private final double ARM_BALL = -0.22;
+	private final double ARM_MID = -0.14;
+	private final double ARM_HIGH = 0;
+	
 	
 	public Arm(int MotorIn) 
 	{
 		System.out.println("Arm Constructor Called!");
-    	//_encoder = new Encoder(0, 1);
-    	//_encoder.setDistancePerPulse(10); //Can be any unit
+    	_encoder = new Encoder(8, 9);
+    	_encoder.setDistancePerPulse(0.0007692307692307692); //1 distance unit = 360 degrees
     	_limitSwitch = new DigitalInput(3);
     	_motor = new VictorSP(MotorIn);
 	}
 	
 	public void init()
 	{
-		//_encoder.reset();
+		_encoder.reset();
+		preset = -1;
+		power = 0;
 	}
 	public void auto(double input)
 	{
-		_motor.set(input * ARM_SPEED);
+		armTarget(input);
+		_motor.set(power);
 	}
     public void handleEvents(DriverStation driverStation)
     {
     	System.out.println("Xbox: " + driverStation.xbox.getRawAxis(1));    	
-    	
-    //	driverStation.smartDashNum("Encoder Distance",_encoder.getDistance());
-    //	driverStation.smartDashNum("Encoder Raw Count",_encoder.getRaw());
-    //	driverStation.smartDashNum("Encoder Count",_encoder.get());
-    //	driverStation.smartDashNum("Encoder Count Difference",_encoder.get() - _encoder.getRaw());
-    	
-    	double power = 0;
     	
     	if (driverStation.xbox.getRawButton(1))
     	{
@@ -80,90 +82,44 @@ public class Arm {
        			}
        		else if (preset == 4)
        		{
-       			//up
-       			power = 1;
+       			armTarget(ARM_HIGH);
        			preset = 4;
-       			if (!_limitSwitch.get())
-       			{
-       				power = 0;
-       				preset = -1;
        			}
-       		}
        		else if (preset == 1)
        		{
-       			//armTarget(4000);
-       			/*if (encoder = near ground)
-       			{
-       				power = 0;
-       			}
-       			else if (encoder lower than near ground)
-       			{
-       				power = 1
-       			}
-       			else if (encoder higher than near ground)
-       			{
-       				power = -1
-       			}
-       			*/
+       			armTarget(ARM_LOW);
        			preset = 1;	
        		}
        		else if (preset == 3)
        		{
-       			//armTarget(3000);
-       			/*if (encoder = drawbridge)
-       			{
-       				power = 0;
-       			}
-       			else if (encoder lower than drawbridge)
-       			{
-       				power = 1
-       			}
-       			else if (encoder higher than drawbridge)
-       			{
-       				power = -1
-       			}
-       			*/
+       			armTarget(ARM_MID);
        			preset = 3;	
        		}
        		else if (preset == 2)
        		{
 
-       			//armTarget(2000);
-       			/*if (encoder = low bar)
-       			{
-       				power = 0;
-       			}
-       			else if (encoder lower than low bar)
-       			{
-       				power = 1
-       			}
-       			else if (encoder higher than low bar)
-       			{
-       				power = -1
-       			}
-       			*/
+       			armTarget(ARM_BALL);
        			preset = 2;	
        		}
-    		if (!_limitSwitch.get() && power > 0)
+    		if ((!_limitSwitch.get() || _encoder.getDistance() > 0) && power > 0)
     		{
     			power = 0;
     		}
+    		/*else if (_encoder.getDistance() > -0.05 && power > 0.25)
+    			{
+    				power = 0.25;
+    			}*/
     		_motor.set(power * ARM_SPEED);
+    		
     	}
     	else
     	{
     		_motor.set(0);
     	}
-    	/*if (!_limitSwitch.get())
-		{
-    		driverStation.xbox.setRumble(RumbleType.kLeftRumble, 1);
-    		driverStation.xbox.setRumble(RumbleType.kRightRumble, 1);
-		}
-		else
-		{
-			driverStation.xbox.setRumble(RumbleType.kLeftRumble, 0);
-    		driverStation.xbox.setRumble(RumbleType.kRightRumble, 0);
-		}*/
+    	
+    	driverStation.smartDashNum("Encoder Distance",_encoder.getDistance());
+    	driverStation.smartDashNum("Arm Power", power);
+    	
     }
     // Returns true if arm is all the way up
     public boolean armUp()
@@ -172,19 +128,20 @@ public class Arm {
 	}
     
     
-    /*public void armTarget(int targetPulse) 
+    public void armTarget(double targetPulse) 
     {
-    	int currentPulses = _encoder.getRaw();
-    	if ((targetPulse - currentPulses) > 100)
+    	double currentPulses = _encoder.getDistance();
+    	if ((targetPulse - currentPulses) < 0.01 && (targetPulse - currentPulses) > -0.01)
     	{
-    		_motor.set(0.5);
+    		power = 0;
     	}
-    	else if ((targetPulse - currentPulses) < -100)
+    	else if ((targetPulse - currentPulses) > 0.01)
     	{
-    		if (!_limitSwitch.get())
-   			{
-    			_motor.set(-0.5);
-   			}
+    		power = 1;
     	}
-    }*/
+    	else if ((targetPulse - currentPulses) < -0.01)
+    	{
+    		power = -1;
+    	}
+    }
 }
