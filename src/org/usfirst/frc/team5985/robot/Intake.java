@@ -21,9 +21,9 @@ public class Intake {
 	public Intake(int motorIn_PWM_Port, int switchIn_DIO_Port)
 	{
 		System.out.println("Intake Constructor Called!");	
-		_motor = new VictorSP( motorIn_PWM_Port );
+		_motor = new VictorSP(motorIn_PWM_Port);
 		
-		_intakeLimitSwitch = new DigitalInput( switchIn_DIO_Port );
+		_intakeLimitSwitch = new DigitalInput(switchIn_DIO_Port);
     	
 	}
 	

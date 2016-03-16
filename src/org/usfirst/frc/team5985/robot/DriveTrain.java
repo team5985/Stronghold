@@ -31,10 +31,10 @@ public class DriveTrain {
     	driveRight = new Victor(rightMotorPort);
     	gyro = new ADXRS450_Gyro();
 	}
-    	public void auto(double power){
+    	public void auto(double leftPower, double rightPower){
     		
-    		driveLeft.set(power);
-    		driveRight.set(power);
+    		driveLeft.set(leftPower);
+    		driveRight.set(-rightPower);
     		
     	}
     	

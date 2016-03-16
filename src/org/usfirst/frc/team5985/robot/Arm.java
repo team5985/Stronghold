@@ -15,7 +15,6 @@ public class Arm {
 	private VictorSP _motor;
 	private DigitalInput _limitSwitch;
 	private Encoder _encoder;
-	private int setpointPulses; // Encoder pulses robot aims towards
 	private final double ARM_SPEED = 0.75;//1;
 	private double preset = -1;
 	private double power = 0;
@@ -25,12 +24,12 @@ public class Arm {
 	private final double ARM_HIGH = 0;
 	
 	
-	public Arm(int MotorIn) 
+	public Arm(int MotorIn, int switchIn, int encoderIn, int encoderIn2) 
 	{
 		System.out.println("Arm Constructor Called!");
-    	_encoder = new Encoder(8, 9);
-    	_encoder.setDistancePerPulse(0.0007692307692307692); //1 distance unit = 360 degrees
-    	_limitSwitch = new DigitalInput(3);
+    	_encoder = new Encoder(encoderIn, encoderIn2);
+    	_encoder.setDistancePerPulse(0.0007692307692307692); //1 distance unit ~~ 1 Revolution ~~ 1300 pulses
+    	_limitSwitch = new DigitalInput(switchIn);
     	_motor = new VictorSP(MotorIn);
 	}
 	
@@ -40,9 +39,9 @@ public class Arm {
 		preset = -1;
 		power = 0;
 	}
-	public void auto(double input)
+	public void auto(double encoderPosition)
 	{
-		armTarget(input);
+		armTarget(encoderPosition);
 		_motor.set(power);
 	}
     public void handleEvents(DriverStation driverStation)

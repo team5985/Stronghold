@@ -21,8 +21,6 @@ public class Robot extends IterativeRobot
 	Arm _arm;
 	Intake _intake;
 	CameraServer camera1;
-	//Encoder armEncoder;
-	//PBEncoder _testEncoder;
 	//Constants for Autonomous
 	/* Autonomous Constants 
 	 * AUTO_[Defence Type]_[Speed]_[arm]
@@ -35,6 +33,8 @@ public class Robot extends IterativeRobot
 	final int AUTO_LOW_FAST_NO_ARM = 4;		//Rock Wall, Moat?
 		
 	// Constants for Robot Ports
+	
+	
 	// PWM
 	int PWM_LEFT_MOTOR_CONTROLLER_PORT = 0;
 	int PWM_RIGHT_MOTOR_CONTROLLER_PORT = 9;
@@ -43,6 +43,9 @@ public class Robot extends IterativeRobot
 	
 	// DIO Ports used on the Rio
 	int DIO_INTAKE_SWITCH_PORT  = 1;
+	int DIO_ARM_SWITCH_PORT = 3;
+	int DIO_ARM_ENCODER_PORT = 8;
+	int DIO_ARM_ENCODER_PORT2 = 9;
 	
 	//Internal member variables
 	int autoLoopCounter; //How long in auto?
@@ -68,7 +71,7 @@ public class Robot extends IterativeRobot
     	//armEncoder = new Encoder(4,5,false,Encoder.EncodingType.k4X);
     	
     	_intake = new Intake(PWM_INTAKE_MOTOR_CONTROLLER_PORT, DIO_INTAKE_SWITCH_PORT); 	
-    	_arm = new Arm(PWM_ARM_MOTOR_CONTROLLER_PORT);
+    	_arm = new Arm(PWM_ARM_MOTOR_CONTROLLER_PORT, DIO_ARM_SWITCH_PORT, DIO_ARM_ENCODER_PORT, DIO_ARM_ENCODER_PORT2);
     	driverStation.smartDashNum("Autonomous Program Selector",0);
     	robotDrive.gyro.calibrate();
     	autoRun = false;
@@ -195,7 +198,7 @@ public class Robot extends IterativeRobot
     	else 
     	{
     	 	// stop robot
-    		robotDrive.auto(0);
+    		robotDrive.auto(0,0);
 		}
     }
 
