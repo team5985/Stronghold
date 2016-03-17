@@ -28,9 +28,9 @@ public class Robot extends IterativeRobot
 	final int AUTO_DEFAULT = 0;			//No Setting/Error				
 	final int AUTO_NONE = -1; 				//No Auto
 	final int AUTO_SHORT = 1;				//Short Travel only
-	final int AUTO_LOW_SLOW_NO_ARM = 2;		//Rough Terrain, Ramparts
+	final int AUTO_LOW_SLOW_NO_ARM = 2;		//Rough Terrain
 	final int AUTO_LOW_SLOW_ARM = 3;		//Low Bar
-	final int AUTO_LOW_FAST_NO_ARM = 4;		//Rock Wall, Moat?
+	final int AUTO_LOW_FAST_NO_ARM = 4;		//Rock Wall, Ramparts, Moat?
 		
 	// Constants for Robot Ports
 	
@@ -53,7 +53,7 @@ public class Robot extends IterativeRobot
 	long gyroResetFinished;
 	double autoNumber;
 	double gyroHeading;
-	boolean autoRun;
+	boolean autoRun = false;
 	
     /**
      * This function is run when the robot is first started up and should be
@@ -91,7 +91,6 @@ public class Robot extends IterativeRobot
     	
     	_arm.init();
     	autoNumber = SmartDashboard.getNumber("Autonomous Program Selector");
-    	
     	gyroHeading = robotDrive.gyro.getAngle();
     	//	System.out.println("auto number: " + autoNumber);
     	autoRun = true;
@@ -124,7 +123,7 @@ public class Robot extends IterativeRobot
 			break;
     	case(AUTO_LOW_FAST_NO_ARM):
     		System.out.println("Auto Program = 4: No Arm High Power Drive");
-    		autoDrive(currentPeriodtimeSincePeriodStartMs, 1000, 3500, 0.8, gyroHeading, 0);
+    		autoDrive(currentPeriodtimeSincePeriodStartMs, 1000, 3500, 0.7, gyroHeading, 0);
 			break;
     	case(AUTO_DEFAULT):
     			System.out.println("autonomousPeriodic: Auto Mode not set");
