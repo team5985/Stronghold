@@ -75,7 +75,7 @@ public class DriveTrain {
             	if (steeringBoost > 0.4){
             		steeringBoost = 0.4;}
             	
-            	//multiplies by speedModifier
+            	//Multiplies by speedModifier
             	steering = steering * (speedModifier + steeringBoost);
             	power = power * speedModifier;
             	
