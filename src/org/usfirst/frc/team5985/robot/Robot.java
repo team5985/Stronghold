@@ -30,7 +30,8 @@ public class Robot extends IterativeRobot
 	final int AUTO_SHORT = 1;				//Short Travel only
 	final int AUTO_LOW_SLOW_NO_ARM = 2;		//Rough Terrain
 	final int AUTO_LOW_SLOW_ARM = 3;		//Low Bar
-	final int AUTO_LOW_FAST_NO_ARM = 4;		//Rock Wall, Ramparts, Moat?
+	final int AUTO_LOW_FAST_NO_ARM = 4;		//Rock Wall, Moat?
+	final int AUTO_LOW_MED_NO_ARM = 5;		//Ramparts
 		
 	// Constants for Robot Ports
 	
@@ -123,6 +124,10 @@ public class Robot extends IterativeRobot
 			break;
     	case(AUTO_LOW_FAST_NO_ARM):
     		System.out.println("Auto Program = 4: No Arm High Power Drive");
+    		autoDrive(currentPeriodtimeSincePeriodStartMs, 1000, 3500, 0.9, gyroHeading, 0);
+			break;
+    	case(AUTO_LOW_MED_NO_ARM):
+    		System.out.println("Auto Program = 5: No Arm Medium Power Drive");
     		autoDrive(currentPeriodtimeSincePeriodStartMs, 1000, 3500, 0.7, gyroHeading, 0);
 			break;
     	case(AUTO_DEFAULT):
