@@ -18,7 +18,7 @@ public class Arm {
 	private final double ARM_SPEED = 0.75;//1;
 	private double preset = -1;
 	private double power = 0;
-	private final double ARM_LOW = -0.25;
+	private final double ARM_LOW = -0.298;	//-0.25;
 	private final double ARM_BALL = -0.22;
 	private final double ARM_MID = -0.14;
 	private final double ARM_HIGH = 0;
@@ -123,7 +123,15 @@ public class Arm {
     // Returns true if arm is all the way up
     public boolean armUp()
 	{
-		return _limitSwitch.get();
+    	try
+    	{
+    		return !_limitSwitch.get();
+    	}
+    	catch (Exception Err)
+    	{
+    		return true;
+    	}
+    	
 	}
     
     

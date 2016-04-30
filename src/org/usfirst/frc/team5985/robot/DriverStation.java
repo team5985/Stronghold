@@ -11,11 +11,25 @@ public class DriverStation {
 	
 	public DriverStation(CameraServer camera1)
 	{	
+	/*try
+	{*/
 		stick = new Joystick(0);
-        xbox =	 new Joystick(1);
-        
+		xbox = new Joystick(1);
+    /*}
+	catch (Exception Err)
+	{
+		smartDashBool("Joystick Error", true);
+	}*/
+     
+	/*try
+	{*/
     	camera1.setQuality(50);
-    	camera1.startAutomaticCapture("cam0");		
+    	camera1.startAutomaticCapture("cam0");
+	/*}
+	catch (Exception Err)
+	{
+		smartDashBool("Camera Error", true);
+	}*/
 	}
 	public void driverInit() {
 		
