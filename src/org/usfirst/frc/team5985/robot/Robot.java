@@ -159,9 +159,9 @@ public class Robot extends IterativeRobot
      */
     public void teleopPeriodic() 
     {
-    	try
-    	{
-    	//SmartDashboard.putNumber("Pulse Count:", _testEncoded.getRawCount());
+    	/*try
+    	{*/
+    	//SmartDashboard.putNumber("Pulse Count:", _testEncoder.getRawCount());
     	//_testEncoder.setSpeed( xbox.getRawAxis(1) / 4 );
     	driverStation.driverPeriodic();
     	robotDrive.processButtons(driverStation);
@@ -174,12 +174,12 @@ public class Robot extends IterativeRobot
 
     	driverStation.smartDashBool("Boulder Switch Released", _intake.hasBoulder());
     	driverStation.smartDashBool("Arm Switch Pressed", _arm.armUp());
-    	}
+    	/*}
     	catch (Exception Err)
     	{
-    		//Err.??
-    		//throw new Exception (Err.getMessage());
-    	}
+    		Err.??
+    		throw new Exception (Err.getMessage());
+    	}*/
     	
     }
     

@@ -3,6 +3,7 @@ package org.usfirst.frc.team5985.robot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.VictorSP;
 
+
 /*
  * Class: Intake
  * Controls the intake mechanism on 5985 Stronghold robot
@@ -13,7 +14,8 @@ public class Intake {
 	
 	private VictorSP _motor;
 	private DigitalInput _intakeLimitSwitch;
-
+	
+	
 	
 	/*
 	 * Constructor: pass in joystick, intake motor, and intake limit switch
