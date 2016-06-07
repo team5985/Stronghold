@@ -3,8 +3,6 @@ package org.usfirst.frc.team5985.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
-import java.io.IOException;
-
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Joystick.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -156,8 +154,6 @@ public class Robot extends IterativeRobot
      */
     public void teleopPeriodic() 
     {
-    	/*try
-    	{*/
     	//SmartDashboard.putNumber("Pulse Count:", _testEncoder.getRawCount());
     	//_testEncoder.setSpeed( xbox.getRawAxis(1) / 4 );
     	driverStation.driverPeriodic();
@@ -171,14 +167,8 @@ public class Robot extends IterativeRobot
 
     	driverStation.smartDashBool("Boulder Switch Released", _intake.hasBoulder());
     	driverStation.smartDashBool("Arm Switch Pressed", _arm.armUp());
-    	/*}
-    	catch (Exception Err)
-    	{
-    		Err.??
-    		throw new Exception (Err.getMessage());
-    	}*/
-    	
-    }
+    	}
+    
     
     /**
      * This function is called periodically during test mode
