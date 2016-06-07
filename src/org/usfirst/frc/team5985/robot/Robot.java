@@ -147,6 +147,7 @@ public class Robot extends IterativeRobot
     		{
     			_arm.init();
     		}
+    	gyroHeading = robotDrive.gyro.getAngle();
     }
 
     /**
