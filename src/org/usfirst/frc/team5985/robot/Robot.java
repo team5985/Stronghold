@@ -93,7 +93,7 @@ public class Robot extends IterativeRobot
     	
     	_arm.init();
     	autoNumber = SmartDashboard.getNumber("Autonomous Program Selector");
-    	gyroHeading = 0; //robotDrive.gyro.getAngle();
+    	gyroHeading = robotDrive.gyro.getAngle();
     	//	System.out.println("auto number: " + autoNumber);
     	autoRun = true;
     }
