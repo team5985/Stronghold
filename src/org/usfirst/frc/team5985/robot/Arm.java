@@ -42,7 +42,7 @@ public class Arm {
 	public void auto(double encoderPosition)
 	{
 		armTarget(encoderPosition);
-		_motor.set(power);
+		motorSet(power);
 	}
     public void handleEvents(DriverStation driverStation)
     {
@@ -108,18 +108,27 @@ public class Arm {
     			{
     				power = 0.25;
     			}*/
-    		_motor.set(power * ARM_SPEED);
+    		motorSet(power * ARM_SPEED);
     		
     	}
     	else
     	{
-    		_motor.set(0);
+    		motorSet(0);
     	}
     	
     	driverStation.smartDashNum("Encoder Distance",_encoder.getDistance());
     	driverStation.smartDashNum("Arm Power", power);
     	
     }
+    
+    private void motorSet(double setPower){
+    	try {
+    		_motor.set(setPower);
+    	} catch (Exception Err) {
+    		System.out.println("Arm Motor Error; " + Err.getMessage());
+    	}
+    }
+    
     // Returns true if arm is all the way up
     public boolean armUp()
 	{
@@ -137,18 +146,26 @@ public class Arm {
     
     public void armTarget(double targetPulse) 
     {
-    	double currentPulses = _encoder.getDistance();
-    	if ((targetPulse - currentPulses) < 0.01 && (targetPulse - currentPulses) > -0.01)
+    	try 
     	{
+    		double currentPulses = _encoder.getDistance();
+        	if ((targetPulse - currentPulses) < 0.01 && (targetPulse - currentPulses) > -0.01)
+        	{
+        		power = 0;
+        	}
+        	else if ((targetPulse - currentPulses) > 0.01)
+        	{
+        		power = 1;
+        	}
+        	else if ((targetPulse - currentPulses) < -0.01)
+        	{
+        		power = -1;
+        	}
+    	} 
+    	catch (Exception Err) {
+    		System.out.println("ArmTarget Error; " + Err.getMessage());
     		power = 0;
     	}
-    	else if ((targetPulse - currentPulses) > 0.01)
-    	{
-    		power = 1;
-    	}
-    	else if ((targetPulse - currentPulses) < -0.01)
-    	{
-    		power = -1;
-    	}
+    	
     }
 }
