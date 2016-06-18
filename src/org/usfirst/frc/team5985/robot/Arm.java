@@ -3,6 +3,7 @@ package org.usfirst.frc.team5985.robot;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.DriverStation;
 
 /*
  * Controls arm motor with an xBox controller.
@@ -44,7 +45,7 @@ public class Arm {
 		armTarget(encoderPosition);
 		motorSet(power);
 	}
-    public void handleEvents(DriverStation driverStation)
+    public void handleEvents(PBDriverStation driverStation)
     {
     	System.out.println("Xbox: " + driverStation.xbox.getRawAxis(1));    	
     	
@@ -121,11 +122,15 @@ public class Arm {
     	
     }
     
+    /**
+     * Wrapper function for setting motor power. Use instead of _motor.set()
+     * @param setPower
+     */
     private void motorSet(double setPower){
     	try {
     		_motor.set(setPower);
     	} catch (Exception Err) {
-    		System.out.println("Arm Motor Error; " + Err.getMessage());
+    		DriverStation.reportError("Arm Motor Error; " + Err.getMessage(), false);
     	}
     }
     
@@ -138,6 +143,7 @@ public class Arm {
     	}
     	catch (Exception Err)
     	{
+    		DriverStation.reportError("Arm Limit Switch Error;" + Err.getMessage(), false);
     		return true;
     	}
     	
@@ -163,7 +169,8 @@ public class Arm {
         	}
     	} 
     	catch (Exception Err) {
-    		System.out.println("ArmTarget Error; " + Err.getMessage());
+    		System.out.println();
+    		DriverStation.reportError("ArmTarget Error; " + Err.getMessage(), false);
     		power = 0;
     	}
     	

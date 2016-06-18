@@ -1,6 +1,7 @@
 package org.usfirst.frc.team5985.robot;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.VictorSP;
 
 
@@ -41,12 +42,12 @@ public class Intake {
 		if (driverStation.stick.getRawButton(1) && !_intakeLimitSwitch.get())
 		{
 			//button 1 and boulder not completely in: suck in boulder	
-			_motor.set(-0.6);
+			motorSet(-0.6);
 		}
 		else if (driverStation.stick.getRawButton(2))
 		{
 			//button 2: shoot out boulder
-			_motor.set(1);
+			motorSet(1);
 		}
 		else
 		{
@@ -55,6 +56,18 @@ public class Intake {
 		}
 		System.out.println("Limit Switch: '" + _intakeLimitSwitch.get() + "'");
 	}
+	
+	/**
+     * Wrapper function for setting motor power. Use this instead of _motor.set()
+     * @param setPower
+     */
+    private void motorSet(double setPower){
+    	try {
+    		_motor.set(setPower);
+    	} catch (Exception Err) {
+    		DriverStation.reportError("Intake Motor Error; " + Err.getMessage(), false);
+    	}
+    }
 	
 	/**
 	 * REturns state of intake

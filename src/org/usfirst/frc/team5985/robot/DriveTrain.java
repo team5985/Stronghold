@@ -2,6 +2,7 @@ package org.usfirst.frc.team5985.robot;
 
 import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.DriverStation;
 
 public class DriveTrain {
 
@@ -49,7 +50,7 @@ public class DriveTrain {
         	double POV = driverStation.stick.getPOV(0);
         	double turnAngle = 0;
         	
-        	driverStation.smartDashNum("Gyro Angle", gyro.getAngle());
+        	driverStation.smartDashNum("Gyro Angle", getGyroAngle());
         	driverStation.smartDashNum("Gyro Rate", gyro.getRate());	
         	
         	if (POV == -1) 
@@ -179,7 +180,7 @@ public class DriveTrain {
         		steerBoost = 0;}
         	
         	
-        	modGyroAngle = gyro.getAngle() % 360;
+        	modGyroAngle = getGyroAngle() % 360;
         	
         	if (modGyroAngle < (target - 180))
     			{target = target - 360;}
@@ -220,7 +221,7 @@ public class DriveTrain {
         public void gyroFollow(double basePower,double gyroTarget)
         {
         	//proportionally drives in the direction of a gyro heading, turning to face the right direction
-        	modGyroAngle = gyro.getAngle() % 360;
+        	modGyroAngle = getGyroAngle() % 360;
         	double gyroPower = 0;
         	
         	if (modGyroAngle < (gyroTarget - 180))
@@ -234,7 +235,7 @@ public class DriveTrain {
         	
         	double gyroMotorPowerLeft = basePower - gyroPower; 
         	double gyroMotorPowerRight = -basePower - gyroPower;
-        	//System.out.println("Angle: " + gyro.getAngle());
+        	//System.out.println("Angle: " + getGyroAngle());
         	//System.out.println("Left: " + gyroMotorPowerLeft);
         	//System.out.println("Right: " + gyroMotorPowerRight);
         	//Makes the motors move
@@ -242,6 +243,21 @@ public class DriveTrain {
         	driveRight.set(gyroMotorPowerRight);
 
         }
+        
+        /**
+         * Wrapper function for reading the gyro's angle. Use this instead of gyro.getAngle()
+         * @return double angle in degrees
+         */
+        private double getGyroAngle(){
+        	try {
+        		return gyro.getAngle();
+        	} catch (Exception Err) {
+        		
+        		DriverStation.reportError("Gyro Error; " + Err.getMessage(), false);
+        		return 0;
+        	}
+        }
+        
         public void processButtons(PBDriverStation driverStation)
         {
         	if (driverStation.stick.getRawButton(11)) driveType = DRIVE_LOW;
