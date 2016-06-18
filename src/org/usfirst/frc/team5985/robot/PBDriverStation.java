@@ -4,12 +4,12 @@ import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class DriverStation {
+public class PBDriverStation {
 
 	Joystick stick;
 	Joystick xbox;
 	
-	public DriverStation(CameraServer camera1)
+	public PBDriverStation(CameraServer camera1)
 	{	
 	/*try
 	{*/

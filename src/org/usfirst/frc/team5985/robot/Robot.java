@@ -3,8 +3,6 @@ package org.usfirst.frc.team5985.robot;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 
-import java.io.IOException;
-
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Joystick.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,7 +17,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot extends IterativeRobot 
 {
 	//Member Objects
-	DriverStation driverStation;
+	PBDriverStation driverStation;
 	DriveTrain robotDrive;
 	Arm _arm;
 	Intake _intake;
@@ -67,7 +65,7 @@ public class Robot extends IterativeRobot
     	//System.out.println("robotInit: Called!");
     	
     	camera1 = CameraServer.getInstance();
-    	driverStation = new DriverStation(camera1);
+    	driverStation = new PBDriverStation(camera1);
     	
     	robotDrive = new DriveTrain(PWM_LEFT_MOTOR_CONTROLLER_PORT,PWM_RIGHT_MOTOR_CONTROLLER_PORT);
  	

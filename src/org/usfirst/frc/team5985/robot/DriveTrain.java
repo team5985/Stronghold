@@ -38,7 +38,7 @@ public class DriveTrain {
     		
     	}
     	
-    	public void teleopDrive(DriverStation driverStation)
+    	public void teleopDrive(PBDriverStation driverStation)
         {
         	// Driving code for the robot
         	
@@ -133,7 +133,7 @@ public class DriveTrain {
         	
         		}
         }
-    	private double getDriveModifier(DriverStation driverStation)
+    	private double getDriveModifier(PBDriverStation driverStation)
         {
         	double power = 0;
         	
@@ -242,7 +242,7 @@ public class DriveTrain {
         	driveRight.set(gyroMotorPowerRight);
 
         }
-        public void processButtons(DriverStation driverStation)
+        public void processButtons(PBDriverStation driverStation)
         {
         	if (driverStation.stick.getRawButton(11)) driveType = DRIVE_LOW;
         	else if (driverStation.stick.getRawButton(12)) driveType = DRIVE_MEDIUM;

@@ -36,7 +36,7 @@ public class Intake {
      * Button 1 sucks in the ball, unless it has the ball already.
      * button 2 shoots the ball.
      */
-	public void handleEvents(DriverStation driverStation)
+	public void handleEvents(PBDriverStation driverStation)
 	{ 	
 		if (driverStation.stick.getRawButton(1) && !_intakeLimitSwitch.get())
 		{
