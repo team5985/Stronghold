@@ -23,7 +23,7 @@ public class PBDriverStation {
      
 	/*try
 	{*/
-    	camera1.setQuality(50);
+    	camera1.setQuality(30);
     	camera1.startAutomaticCapture("cam0");
 	/*}
 	catch (Exception Err)
@@ -38,12 +38,12 @@ public class PBDriverStation {
 		
 		//Feeds stick + xbox info to Smart Dashboard
 		
-		smartDashNum("Stick X Value (Steering)", stick.getX());
-    	smartDashNum("Stick Y Value (Power)", stick.getY());
-    	smartDashNum("Stick Slider (Raw SpeedModifier)", -(stick.getThrottle() - 1 ) / 2);
-    	smartDashBool("Stick Button 1 (Intake In)", stick.getRawButton(1));
-    	smartDashBool("Stick Button 2 (Intake Out)", stick.getRawButton(2));
-    	smartDashNum("Xbox Y Value (Arm)", xbox.getRawAxis(1));
+		// smartDashNum("Stick X Value (Steering)", stick.getX());
+		// smartDashNum("Stick Y Value (Power)", stick.getY());
+		// smartDashNum("Stick Slider (Raw SpeedModifier)", -(stick.getThrottle() - 1 ) / 2);
+		// smartDashBool("Stick Button 1 (Intake In)", stick.getRawButton(1));
+		// smartDashBool("Stick Button 2 (Intake Out)", stick.getRawButton(2));
+		// smartDashNum("Xbox Y Value (Arm)", xbox.getRawAxis(1));
 	}
 	public void smartDashNum(String label, double value){
 		SmartDashboard.putNumber(label, value);}
