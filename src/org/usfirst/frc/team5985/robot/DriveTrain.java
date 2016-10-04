@@ -60,7 +60,7 @@ public class DriveTrain {
         		//Gets stick values and sets variables for it
             	double steering = driverStation.stick.getX();
             	double power = driverStation.stick.getY();
-            	double steeringBoost = 0;
+//            	double steeringBoost = 0;
             	
             	//corrects for the stick not being 100% zeroed
             	if (steering < 0.1 && steering > -0.1)
@@ -72,17 +72,21 @@ public class DriveTrain {
             		power = 0;
             	}
             	
-            	steeringBoost = speedModifier + 0.1;
-            	if (steeringBoost > 0.4){
-            		steeringBoost = 0.4;}
+//            	steeringBoost = speedModifier + 0.1;
+//            	if (steeringBoost > 0.4){
+//            		steeringBoost = 0.4;}
             	
             	//Multiplies by speedModifier
-            	steering = steering * (speedModifier + steeringBoost);
+//            	steering = steering * (speedModifier + steeringBoost);
             	power = power * speedModifier;
             	
             	//Applies above variables to variables that will be applied to the motors
-            	double leftPower = -power + steering;
-            	double rightPower = power + steering;
+//            	double leftPower = -power + steering;
+//            	double rightPower = power + steering;
+            	
+            	//Experimental drive maths that may make driving smoother. TODO: Test this
+            	double leftPower = ((power/2)*steering)+power/2;
+            	double rightPower = -((power/2)*steering)+power/2;
             	
             	//Limits power to 100% to make sure the controllers don't pull too many amps
             	if (leftPower > 0.99){
