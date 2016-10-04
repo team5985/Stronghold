@@ -47,7 +47,7 @@ public class Intake {
 		else if (driverStation.stick.getRawButton(2))
 		{
 			//button 2: shoot out boulder
-			motorSet(1);
+			motorSet(0.99);
 		}
 		else
 		{

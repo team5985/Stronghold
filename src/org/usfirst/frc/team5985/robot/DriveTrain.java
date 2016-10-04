@@ -84,6 +84,14 @@ public class DriveTrain {
             	double leftPower = -power + steering;
             	double rightPower = power + steering;
             	
+            	//Limits power to 100% to make sure the controllers don't pull too many amps
+            	if (leftPower > 0.99){
+            		leftPower = 0.99;
+            	}
+            	if (rightPower > 0.99){
+            		rightPower = 0.99;
+            	}
+            	
             	
             	//Displays the smartDashboard
             	driverStation.smartDashNum("SpeedModifier", speedModifier);
